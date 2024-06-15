@@ -55,7 +55,7 @@ module OmniAI
       # @param stream [Proc, nil] optional
       #
       # @return [OmniAI::Chat::Completion]
-      def chat(messages, model: Chat::Model::HAIKU, temperature: nil, format: nil, stream: nil)
+      def chat(messages, model: Chat::Model::CLAUDE_HAIKU, temperature: nil, format: nil, stream: nil)
         Chat.process!(messages, model:, temperature:, format:, stream:, client: self)
       end
     end
