@@ -35,12 +35,8 @@ workflows:
       - rspec
       - rubocop
       - release:
-          requires:
-            - rspec
-            - rubocop
           filters:
             branches:
-              only:
-                - main
+              ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+$/
