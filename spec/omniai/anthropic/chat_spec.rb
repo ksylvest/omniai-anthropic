@@ -6,7 +6,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
   describe '#completion' do
     subject(:completion) { described_class.process!(prompt, client:, model:) }
 
-    let(:model) { OmniAI::Anthropic::Chat::Model::HAIKU }
+    let(:model) { OmniAI::Anthropic::Chat::Model::CLAUDE_HAIKU }
 
     context 'with a string prompt' do
       let(:prompt) { 'Tell me a joke!' }

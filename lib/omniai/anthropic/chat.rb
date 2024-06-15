@@ -13,9 +13,15 @@ module OmniAI
     #   chat.completion([{ role: 'system', content: 'Tell me a joke.' }])
     class Chat < OmniAI::Chat
       module Model
-        HAIKU = 'claude-3-haiku-20240307'
-        SONNET = 'claude-3-sonnet-20240229'
-        OPUS = 'claude-3-opus-20240229'
+        CLAUDE_INSTANT_1_0 = 'claude-instant-1.2'
+        CLAUDE_2_0 = 'claude-2.0'
+        CLAUDE_2_1 = 'claude-2.1'
+        CLAUDE_3_OPUS_20240229 = 'claude-3-opus-20240229'
+        CLAUDE_3_HAIKU_20240307 = 'claude-3-haiku-20240307'
+        CLAUDE_3_SONET_20240307 = 'claude-3-haiku-20240307'
+        CLAUDE_OPUS = CLAUDE_3_OPUS_20240229
+        CLAUDE_HAIKU = CLAUDE_3_HAIKU_20240307
+        CLAUDE_SONET = CLAUDE_3_SONET_20240307
       end
 
       protected
