@@ -67,7 +67,7 @@ completion.choice.message.content # 'The capital of Canada is Ottawa.'
 `model` takes an optional string (default is `claude-3-haiku-20240307`):
 
 ```ruby
-completion = client.chat('Provide code for fibonacci', model: OmniAI::Anthropic::Chat::Model::OPUS)
+completion = client.chat('Provide code for fibonacci', model: OmniAI::Anthropic::Chat::Model::CLAUDE_OPUS)
 completion.choice.message.content # 'def fibonacci(n)...end'
 ```
 
