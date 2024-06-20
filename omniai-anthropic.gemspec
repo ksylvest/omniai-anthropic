@@ -5,6 +5,7 @@ require_relative 'lib/omniai/anthropic/version'
 Gem::Specification.new do |spec|
   spec.name = 'omniai-anthropic'
   spec.version = OmniAI::Anthropic::VERSION
+  spec.license = 'MIT'
   spec.authors = ['Kevin Sylvestre']
   spec.email = ['kevin@ksylvest.com']
 
