@@ -10,14 +10,17 @@ RSpec/SpecFilePathFormat:
   CustomTransform:
     OmniAI: omniai
 
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: consistent_comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: consistent_comma
-
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
