@@ -24,15 +24,19 @@ module OmniAI
 
       # @param api_key [String] optional - defaults to `OmniAI::Anthropic.config.api_key`
       # @param host [String] optional - defaults to `OmniAI::Anthropic.config.host`
+      # @param version [String] optional - defaults to `OmniAI::Anthropic.config.version`
+      # @param logger [Logger] optional - defaults to `OmniAI::Anthropic.config.logger`
+      # @param timeout [Integer] optional - defaults to `OmniAI::Anthropic.config.timeout`
       def initialize(
         api_key: OmniAI::Anthropic.config.api_key,
+        host: OmniAI::Anthropic.config.host,
         version: OmniAI::Anthropic.config.version,
         logger: OmniAI::Anthropic.config.logger,
-        host: OmniAI::Anthropic.config.host
+        timeout: OmniAI::Anthropic.config.timeout
       )
         raise(ArgumentError, %(ENV['ANTHROPIC_API_KEY'] must be defined or `api_key` must be passed)) if api_key.nil?
 
-        super(api_key:, logger:)
+        super(api_key:, host:, logger:, timeout:)
 
         @host = host
         @version = version
@@ -40,10 +44,10 @@ module OmniAI
 
       # @return [HTTP::Client]
       def connection
-        HTTP
-          .headers('x-api-key': @api_key)
-          .headers('anthropic-version': @version)
-          .persistent('https://api.anthropic.com')
+        @connection ||= super.headers({
+          'x-api-key': @api_key,
+          'anthropic-version': @version,
+        }.compact)
       end
 
       # @raise [OmniAI::Error]

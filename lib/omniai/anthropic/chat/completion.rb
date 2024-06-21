@@ -5,13 +5,13 @@ module OmniAI
     class Chat
       # A completion returned by the API.
       class Completion < OmniAI::Chat::Completion
-        # @return [Array<OmniAI::Chat::Choice>]
+        # @return [Array<OmniAI::Chat::MessageChoice>]
         def choices
           @choices ||= begin
             role = @data['role']
 
             @data['content'].map do |data, index|
-              OmniAI::Chat::Choice.for(data: {
+              OmniAI::Chat::MessageChoice.for(data: {
                 'index' => index,
                 'message' => { 'role' => role, 'content' => data['text'] },
               })
