@@ -27,20 +27,6 @@ module OmniAI
 
       protected
 
-      # @param response [HTTP::Response]
-      # @return [OmniAI::Anthropic::Chat::Stream]
-      def stream!(response:)
-        raise Error, "#{self.class.name}#stream! unstreamable" unless @stream
-
-        Stream.new(response:).stream! { |chunk| @stream.call(chunk) }
-      end
-
-      # @param response [HTTP::Response]
-      # @param response [OmniAI::Anthropic::Chat::Completion]
-      def complete!(response:)
-        Completion.new(data: response.parse)
-      end
-
       # @return [Hash]
       def payload
         OmniAI::Anthropic.config.chat_options.merge({
