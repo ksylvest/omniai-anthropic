@@ -4,5 +4,9 @@
 require 'bundler/setup'
 require 'omniai/anthropic'
 
+require 'logger'
+
+CLIENT = OmniAI::Anthropic::Client.new(logger: Logger.new($stdout))
+
 require 'irb'
 IRB.start(__FILE__)
