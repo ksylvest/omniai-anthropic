@@ -11,7 +11,7 @@ module OmniAI
             role = @data['role']
 
             @data['content'].map do |data, index|
-              OmniAI::Chat::MessageChoice.for(data: {
+              OmniAI::Chat::MessageChoice.new(data: {
                 'index' => index,
                 'message' => { 'role' => role, 'content' => data['text'] },
               })
