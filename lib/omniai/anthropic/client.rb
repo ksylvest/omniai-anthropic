@@ -57,10 +57,11 @@ module OmniAI
       # @param format [Symbol] optional :text or :json
       # @param temperature [Float, nil] optional
       # @param stream [Proc, nil] optional
+      # @param tools [Array<OmniAI::Tool>, nil] optional
       #
       # @return [OmniAI::Chat::Completion]
-      def chat(messages, model: Chat::Model::CLAUDE_HAIKU, temperature: nil, format: nil, stream: nil)
-        Chat.process!(messages, model:, temperature:, format:, stream:, client: self)
+      def chat(messages, model: Chat::Model::CLAUDE_HAIKU, temperature: nil, format: nil, stream: nil, tools: nil)
+        Chat.process!(messages, model:, temperature:, format:, stream:, tools:, client: self)
       end
     end
   end

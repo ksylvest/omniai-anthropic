@@ -16,6 +16,9 @@ Layout/FirstHashElementIndentation:
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
+Metrics/MethodLength:
+  Enabled: false
+
 Metrics/ParameterLists:
   Enabled: false
 

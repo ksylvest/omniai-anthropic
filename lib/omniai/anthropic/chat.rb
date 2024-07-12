@@ -31,24 +31,38 @@ module OmniAI
       def payload
         OmniAI::Anthropic.config.chat_options.merge({
           model: @model,
-          messages: messages.filter { |message| !message[:role].eql?(OmniAI::Chat::Role::SYSTEM) },
+          messages: messages.filter { |message| !message[:role].eql?(Role::SYSTEM) },
           system:,
           stream: @stream.nil? ? nil : !@stream.nil?,
           temperature: @temperature,
+          tools: tools_payload,
         }).compact
       end
 
       # @return [String, nil]
       def system
-        messages = self.messages.filter { |message| message[:role].eql?(OmniAI::Chat::Role::SYSTEM) }
-        messages << { role: OmniAI::Chat::Role::SYSTEM, content: OmniAI::Chat::JSON_PROMPT } if @format.eql?(:json)
+        messages = self.messages.filter { |message| message[:role].eql?(Role::SYSTEM) }
+        messages << { role: Role::SYSTEM, content: JSON_PROMPT } if @format.eql?(:json)
 
         messages.map { |message| message[:content] }.join("\n\n") if messages.any?
       end
 
       # @return [String]
       def path
-        "/#{OmniAI::Anthropic::Client::VERSION}/messages"
+        "/#{Client::VERSION}/messages"
+      end
+
+      private
+
+      # @return [Array<Hash>, nil]
+      def tools_payload
+        @tools&.map do |tool|
+          {
+            name: tool.name,
+            description: tool.description,
+            input_schema: tool.parameters&.prepare,
+          }.compact
+        end
       end
     end
   end
