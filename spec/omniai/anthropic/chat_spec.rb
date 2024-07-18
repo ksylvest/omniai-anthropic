@@ -40,10 +40,10 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
     context 'with an array prompt' do
       let(:prompt) do
-        [
-          { role: OmniAI::Chat::Role::SYSTEM, content: 'You are a helpful assistant.' },
-          { role: OmniAI::Chat::Role::USER, content: 'What is the capital of Canada?' },
-        ]
+        OmniAI::Chat::Prompt.build do |prompt|
+          prompt.system('You are a helpful assistant.')
+          prompt.user('What is the capital of Canada?')
+        end
       end
 
       before do
@@ -116,9 +116,10 @@ RSpec.describe OmniAI::Anthropic::Chat do
       subject(:completion) { described_class.process!(prompt, client:, model:, format: :json) }
 
       let(:prompt) do
-        [
-          { role: OmniAI::Chat::Role::USER, content: 'What is the name of the dummer for the Beatles?' },
-        ]
+        OmniAI::Chat::Prompt.build do |prompt|
+          prompt.system(OmniAI::Chat::JSON_PROMPT)
+          prompt.user('What is the name of the dummer for the Beatles?')
+        end
       end
 
       before do
@@ -193,6 +194,55 @@ RSpec.describe OmniAI::Anthropic::Chat do
         completion
         expect(chunks.map { |chunk| chunk.choice.delta.content }).to eql(%w[A B])
       end
+    end
+
+    context 'when using files / URLs' do
+      let(:io) { Tempfile.new }
+
+      let(:prompt) do
+        OmniAI::Chat::Prompt.build do |prompt|
+          prompt.user do |message|
+            message.text('What are these photos of?')
+            message.url('https://localhost/cat.jpg', 'image/jpeg')
+            message.url('https://localhost/dog.jpg', 'image/jpeg')
+            message.file(io, 'image/jpeg')
+          end
+        end
+      end
+
+      before do
+        stub_request(:get, 'https://localhost/cat.jpg').to_return(body: 'cat')
+        stub_request(:get, 'https://localhost/dog.jpg').to_return(body: 'dog')
+        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              {
+                role: 'user',
+                content: [
+                  { type: 'text', text: 'What are these photos of?' },
+                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'Y2F0' } },
+                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'ZG9n' } },
+                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: '' } },
+                ],
+              },
+            ],
+            model:,
+          }))
+          .to_return_json(body: {
+            type: 'message',
+            role: 'assistant',
+            model:,
+            content: [
+              {
+                type: 'text',
+                text: 'They are a photo of a cat and a photo of a dog.',
+              },
+            ],
+          })
+      end
+
+      it { expect(completion.choice.message.role).to eql('assistant') }
+      it { expect(completion.choice.message.content).to eql('They are a photo of a cat and a photo of a dog.') }
     end
   end
 end

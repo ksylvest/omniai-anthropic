@@ -2,15 +2,15 @@
 
 module OmniAI
   module Anthropic
-    # A Anthropic chat implementation.
+    # An Anthropic chat implementation.
     #
     # Usage:
     #
-    #   chat = OmniAI::Anthropic::Chat.new(client: client)
-    #   chat.completion('Tell me a joke.')
-    #   chat.completion(['Tell me a joke.'])
-    #   chat.completion({ role: 'user', content: 'Tell me a joke.' })
-    #   chat.completion([{ role: 'system', content: 'Tell me a joke.' }])
+    #   completion = OmniAI::Anthropic::Chat.process!(client: client) do |prompt|
+    #     prompt.system('You are an expert in the field of AI.')
+    #     prompt.user('What are the biggest risks of AI?')
+    #   end
+    #   completion.choice.message.content # '...'
     class Chat < OmniAI::Chat
       module Model
         CLAUDE_INSTANT_1_0 = 'claude-instant-1.2'
@@ -25,13 +25,33 @@ module OmniAI
         CLAUDE_SONET = CLAUDE_3_5_SONET_20240620
       end
 
-      protected
+      # @param [Media]
+      # @return [Hash]
+      # @example
+      #   media = Media.new(...)
+      #   MEDIA_SERIALIZER.call(media)
+      MEDIA_SERIALIZER = lambda do |media, *|
+        {
+          type: media.kind, # i.e. 'image' / 'video' / 'audio' / ...
+          source: {
+            type: 'base64',
+            media_type: media.type, # i.e. 'image/jpeg' / 'video/ogg' / 'audio/mpeg' / ...
+            data: media.data,
+          },
+        }
+      end
+
+      # @return [Context]
+      CONTEXT = Context.build do |context|
+        context.serializers[:file] = MEDIA_SERIALIZER
+        context.serializers[:url] = MEDIA_SERIALIZER
+      end
 
       # @return [Hash]
       def payload
         OmniAI::Anthropic.config.chat_options.merge({
           model: @model,
-          messages: messages.filter { |message| !message[:role].eql?(Role::SYSTEM) },
+          messages:,
           system:,
           stream: @stream.nil? ? nil : !@stream.nil?,
           temperature: @temperature,
@@ -39,12 +59,16 @@ module OmniAI
         }).compact
       end
 
+      # @return [Array<Hash>]
+      def messages
+        messages = @prompt.messages.filter(&:user?)
+        messages.map { |message| message.serialize(context: CONTEXT) }
+      end
+
       # @return [String, nil]
       def system
-        messages = self.messages.filter { |message| message[:role].eql?(Role::SYSTEM) }
-        messages << { role: Role::SYSTEM, content: JSON_PROMPT } if @format.eql?(:json)
-
-        messages.map { |message| message[:content] }.join("\n\n") if messages.any?
+        messages = @prompt.messages.filter(&:system?)
+        messages.map(&:content).join("\n\n") if messages.any?
       end
 
       # @return [String]
