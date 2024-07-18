@@ -25,6 +25,8 @@ module OmniAI
         CLAUDE_SONET = CLAUDE_3_5_SONET_20240620
       end
 
+      DEFAULT_MODEL = Model::CLAUDE_HAIKU
+
       # @param [Media]
       # @return [Hash]
       # @example
