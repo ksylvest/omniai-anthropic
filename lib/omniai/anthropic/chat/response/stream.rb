@@ -46,8 +46,8 @@ module OmniAI
 
             # Handler for Type::MESSAGE_STOP
             #
-            # @param data [Hash]
-            def message_stop(_)
+            # @param _data [Hash]
+            def message_stop(_data)
               @id = nil
               @model = nil
               @role = nil
@@ -62,8 +62,8 @@ module OmniAI
 
             # Handler for Type::CONTENT_BLOCK_STOP
             #
-            # @param data [Hash]
-            def content_block_stop(_)
+            # @param _data [Hash]
+            def content_block_stop(_data)
               @index = nil
             end
 
