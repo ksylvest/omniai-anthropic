@@ -18,14 +18,14 @@ module OmniAI
         CLAUDE_2_1 = 'claude-2.1'
         CLAUDE_3_OPUS_20240229 = 'claude-3-opus-20240229'
         CLAUDE_3_HAIKU_20240307 = 'claude-3-haiku-20240307'
-        CLAUDE_3_SONET_20240307 = 'claude-3-haiku-20240307'
-        CLAUDE_3_5_SONET_20240620 = 'claude-3-5-sonnet-20240620'
+        CLAUDE_3_SONNET_20240307 = 'claude-3-sonnet-20240307'
+        CLAUDE_3_5_SONNET_20240620 = 'claude-3-5-sonnet-20240620'
         CLAUDE_OPUS = CLAUDE_3_OPUS_20240229
         CLAUDE_HAIKU = CLAUDE_3_HAIKU_20240307
-        CLAUDE_SONET = CLAUDE_3_5_SONET_20240620
+        CLAUDE_SONNET = CLAUDE_3_5_SONNET_20240620
       end
 
-      DEFAULT_MODEL = Model::CLAUDE_HAIKU
+      DEFAULT_MODEL = Model::CLAUDE_SONNET
 
       # @param [Media]
       # @return [Hash]
