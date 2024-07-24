@@ -52,26 +52,25 @@ module OmniAI
       # @return [Hash]
       def payload
         OmniAI::Anthropic.config.chat_options.merge({
+          messages: @prompt.serialize,
           model: @model,
-          messages:,
-          system:,
           stream: @stream.nil? ? nil : !@stream.nil?,
           temperature: @temperature,
           tools: tools_payload,
         }).compact
       end
 
-      # @return [Array<Hash>]
-      def messages
-        messages = @prompt.messages.filter(&:user?)
-        messages.map { |message| message.serialize(context: CONTEXT) }
-      end
+      # # @return [Array<Hash>]
+      # def messages
+      #   messages = @prompt.messages.filter(&:user?)
+      #   messages.map { |message| message.serialize(context: CONTEXT) }
+      # end
 
-      # @return [String, nil]
-      def system
-        messages = @prompt.messages.filter(&:system?)
-        messages.map(&:content).join("\n\n") if messages.any?
-      end
+      # # @return [String, nil]
+      # def system
+      #   messages = @prompt.messages.filter(&:system?)
+      #   messages.map(&:content).join("\n\n") if messages.any?
+      # end
 
       # @return [String]
       def path
