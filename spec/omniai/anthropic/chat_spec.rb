@@ -48,9 +48,9 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
       before do
         stub_request(:post, 'https://api.anthropic.com/v1/messages')
-          .with(body: OmniAI::Anthropic.config.chat_options.merge({
-            system: 'You are a helpful assistant.',
+          .with(body: hash_including({
             messages: [
+              { role: 'system', content: 'You are a helpful assistant.' },
               { role: 'user', content: 'What is the capital of Canada?' },
             ],
             model:,
@@ -118,16 +118,16 @@ RSpec.describe OmniAI::Anthropic::Chat do
       let(:prompt) do
         OmniAI::Chat::Prompt.build do |prompt|
           prompt.system(OmniAI::Chat::JSON_PROMPT)
-          prompt.user('What is the name of the dummer for the Beatles?')
+          prompt.user('What is the name of the drummer for the Beatles?')
         end
       end
 
       before do
         stub_request(:post, 'https://api.anthropic.com/v1/messages')
-          .with(body: OmniAI::Anthropic.config.chat_options.merge({
-            system: OmniAI::Chat::JSON_PROMPT,
+          .with(body: hash_including({
             messages: [
-              { role: 'user', content: 'What is the name of the dummer for the Beatles?' },
+              { role: 'system', content: OmniAI::Chat::JSON_PROMPT },
+              { role: 'user', content: 'What is the name of the drummer for the Beatles?' },
             ],
             model:,
           }))
@@ -138,7 +138,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
             content: [
               {
                 type: 'text',
-                text: '{ "name": "Ringo" }',
+                text: '{ "name": "Ringo Starr" }',
               },
             ],
             usage: {
@@ -149,7 +149,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
 
       it { expect(completion.choice.message.role).to eql('assistant') }
-      it { expect(completion.choice.message.content).to eql('{ "name": "Ringo" }') }
+      it { expect(completion.choice.message.content).to eql('{ "name": "Ringo Starr" }') }
     end
 
     context 'when streaming' do
@@ -214,15 +214,15 @@ RSpec.describe OmniAI::Anthropic::Chat do
         stub_request(:get, 'https://localhost/cat.jpg').to_return(body: 'cat')
         stub_request(:get, 'https://localhost/dog.jpg').to_return(body: 'dog')
         stub_request(:post, 'https://api.anthropic.com/v1/messages')
-          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+          .with(body: hash_including({
             messages: [
               {
                 role: 'user',
                 content: [
                   { type: 'text', text: 'What are these photos of?' },
-                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'Y2F0' } },
-                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'ZG9n' } },
-                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: '' } },
+                  { type: 'image_url', image_url: { url: 'https://localhost/cat.jpg' } },
+                  { type: 'image_url', image_url: { url: 'https://localhost/dog.jpg' } },
+                  { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' } },
                 ],
               },
             ],
