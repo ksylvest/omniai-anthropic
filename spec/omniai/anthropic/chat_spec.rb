@@ -14,7 +14,17 @@ RSpec.describe OmniAI::Anthropic::Chat do
       before do
         stub_request(:post, 'https://api.anthropic.com/v1/messages')
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
-            messages: [{ role: 'user', content: prompt }],
+            messages: [
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'Tell me a joke!',
+                  },
+                ],
+              },
+            ],
             model:,
           }))
           .to_return_json(body: {
@@ -34,8 +44,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.choice.message.role).to eql('assistant') }
-      it { expect(completion.choice.message.content).to eql('Two elephants fall off a cliff. Boom! Boom!') }
+      it { expect(completion.text).to eql('Two elephants fall off a cliff. Boom! Boom!') }
     end
 
     context 'with an array prompt' do
@@ -51,7 +60,15 @@ RSpec.describe OmniAI::Anthropic::Chat do
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             system: 'You are a helpful assistant.',
             messages: [
-              { role: 'user', content: 'What is the capital of Canada?' },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'What is the capital of Canada?',
+                  },
+                ],
+              },
             ],
             model:,
           }))
@@ -72,8 +89,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.choice.message.role).to eql('assistant') }
-      it { expect(completion.choice.message.content).to eql('The capital of Canada is Ottawa.') }
+      it { expect(completion.text).to eql('The capital of Canada is Ottawa.') }
     end
 
     context 'with a temperature' do
@@ -86,7 +102,15 @@ RSpec.describe OmniAI::Anthropic::Chat do
         stub_request(:post, 'https://api.anthropic.com/v1/messages')
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
-              { role: 'user', content: 'Pick a number between 1 and 5.' },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'Pick a number between 1 and 5.',
+                  },
+                ],
+              },
             ],
             model:,
             temperature:,
@@ -108,8 +132,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.choice.message.role).to eql('assistant') }
-      it { expect(completion.choice.message.content).to eql('3') }
+      it { expect(completion.text).to eql('3') }
     end
 
     context 'when formatting as JSON' do
@@ -127,7 +150,15 @@ RSpec.describe OmniAI::Anthropic::Chat do
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             system: OmniAI::Chat::JSON_PROMPT,
             messages: [
-              { role: 'user', content: 'What is the name of the dummer for the Beatles?' },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'What is the name of the dummer for the Beatles?',
+                  },
+                ],
+              },
             ],
             model:,
           }))
@@ -148,8 +179,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.choice.message.role).to eql('assistant') }
-      it { expect(completion.choice.message.content).to eql('{ "name": "Ringo" }') }
+      it { expect(completion.text).to eql('{ "name": "Ringo" }') }
     end
 
     context 'when streaming' do
@@ -162,14 +192,22 @@ RSpec.describe OmniAI::Anthropic::Chat do
         stub_request(:post, 'https://api.anthropic.com/v1/messages')
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
-              { role: 'user', content: 'Tell me a story.' },
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'text',
+                    text: 'Tell me a story.',
+                  },
+                ],
+              },
             ],
             model:,
             stream: !stream.nil?,
           }))
           .to_return(body: <<~STREAM)
             event: message_start
-            data: #{JSON.generate(type: 'message_start', message: { role: 'assistant' })}\n
+            data: #{JSON.generate(type: 'message_start', message: { id: 'fake_id', model:, role: 'assistant' })}\n
 
             event: content_block_start
             data: #{JSON.generate(type: 'content_block_start', index: 0)}\n
@@ -192,7 +230,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
         chunks = []
         allow(stream).to receive(:call) { |chunk| chunks << chunk }
         completion
-        expect(chunks.map { |chunk| chunk.choice.delta.content }).to eql(%w[A B])
+        expect(chunks.map(&:text)).to eql(%w[A B])
       end
     end
 
@@ -241,8 +279,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.choice.message.role).to eql('assistant') }
-      it { expect(completion.choice.message.content).to eql('They are a photo of a cat and a photo of a dog.') }
+      it { expect(completion.text).to eql('They are a photo of a cat and a photo of a dog.') }
     end
   end
 end

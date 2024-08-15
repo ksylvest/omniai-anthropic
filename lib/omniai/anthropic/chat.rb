@@ -10,7 +10,7 @@ module OmniAI
     #     prompt.system('You are an expert in the field of AI.')
     #     prompt.user('What are the biggest risks of AI?')
     #   end
-    #   completion.choice.message.content # '...'
+    #   completion.text # '...'
     class Chat < OmniAI::Chat
       module Model
         CLAUDE_INSTANT_1_0 = 'claude-instant-1.2'
@@ -27,26 +27,22 @@ module OmniAI
 
       DEFAULT_MODEL = Model::CLAUDE_SONNET
 
-      # @param [Media]
-      # @return [Hash]
-      # @example
-      #   media = Media.new(...)
-      #   MEDIA_SERIALIZER.call(media)
-      MEDIA_SERIALIZER = lambda do |media, *|
-        {
-          type: media.kind, # i.e. 'image' / 'video' / 'audio' / ...
-          source: {
-            type: 'base64',
-            media_type: media.type, # i.e. 'image/jpeg' / 'video/ogg' / 'audio/mpeg' / ...
-            data: media.data,
-          },
-        }
-      end
-
       # @return [Context]
       CONTEXT = Context.build do |context|
-        context.serializers[:file] = MEDIA_SERIALIZER
-        context.serializers[:url] = MEDIA_SERIALIZER
+        context.serializers[:file] = MediaSerializer.method(:serialize)
+        context.serializers[:url] = MediaSerializer.method(:serialize)
+
+        context.serializers[:choice] = ChoiceSerializer.method(:serialize)
+        context.deserializers[:choice] = ChoiceSerializer.method(:deserialize)
+
+        context.serializers[:tool_call] = ToolCallSerializer.method(:serialize)
+        context.deserializers[:tool_call] = ToolCallSerializer.method(:deserialize)
+
+        context.serializers[:function] = FunctionSerializer.method(:serialize)
+        context.deserializers[:function] = FunctionSerializer.method(:deserialize)
+
+        context.deserializers[:content] = ContentSerializer.method(:deserialize)
+        context.deserializers[:payload] = PayloadSerializer.method(:deserialize)
       end
 
       # @return [Hash]
@@ -63,19 +59,28 @@ module OmniAI
 
       # @return [Array<Hash>]
       def messages
-        messages = @prompt.messages.filter(&:user?)
-        messages.map { |message| message.serialize(context: CONTEXT) }
+        messages = @prompt.messages.reject(&:system?)
+        messages.map { |message| message.serialize(context:) }
       end
 
       # @return [String, nil]
       def system
         messages = @prompt.messages.filter(&:system?)
-        messages.map(&:content).join("\n\n") if messages.any?
+        return if messages.empty?
+
+        messages.filter(&:text?).map(&:text).join("\n\n")
       end
 
       # @return [String]
       def path
         "/#{Client::VERSION}/messages"
+      end
+
+      protected
+
+      # @return [Context]
+      def context
+        CONTEXT
       end
 
       private
