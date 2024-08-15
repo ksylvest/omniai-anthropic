@@ -10,6 +10,9 @@ RSpec/SpecFilePathFormat:
   CustomTransform:
     OmniAI: omniai
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
