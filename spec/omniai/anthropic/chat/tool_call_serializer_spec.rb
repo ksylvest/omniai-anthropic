@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe OmniAI::Anthropic::Chat::ToolCall do
+RSpec.describe OmniAI::Anthropic::Chat::ToolCallSerializer do
   let(:context) { OmniAI::Anthropic::Chat::CONTEXT }
 
   describe '.deserialize' do
@@ -19,7 +19,7 @@ RSpec.describe OmniAI::Anthropic::Chat::ToolCall do
   end
 
   describe '#serialize' do
-    subject(:serialize) { tool_call.serialize(context:) }
+    subject(:serialize) { described_class.serialize(tool_call, context:) }
 
     let(:tool_call) { OmniAI::Chat::ToolCall.new(id: 'fake_id', function:) }
     let(:function) { OmniAI::Chat::Function.new(name: 'temperature', arguments: { unit: 'celsius' }) }

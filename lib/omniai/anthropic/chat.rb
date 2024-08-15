@@ -38,8 +38,14 @@ module OmniAI
         context.serializers[:tool_call] = ToolCallSerializer.method(:serialize)
         context.deserializers[:tool_call] = ToolCallSerializer.method(:deserialize)
 
+        context.serializers[:tool_call_result] = ToolCallResultSerializer.method(:serialize)
+        context.deserializers[:tool_call_result] = ToolCallResultSerializer.method(:deserialize)
+
         context.serializers[:function] = FunctionSerializer.method(:serialize)
         context.deserializers[:function] = FunctionSerializer.method(:deserialize)
+
+        context.serializers[:message] = MessageSerializer.method(:serialize)
+        context.deserializers[:message] = MessageSerializer.method(:deserialize)
 
         context.deserializers[:content] = ContentSerializer.method(:deserialize)
         context.deserializers[:payload] = PayloadSerializer.method(:deserialize)
@@ -81,6 +87,15 @@ module OmniAI
       # @return [Context]
       def context
         CONTEXT
+      end
+
+      # @return [Array<Message>]
+      def build_tool_call_messages(tool_call_list)
+        content = tool_call_list.map do |tool_call|
+          ToolCallResult.new(tool_call_id: tool_call.id, content: execute_tool_call(tool_call))
+        end
+
+        [Message.new(role: OmniAI::Chat::Role::USER, content:)]
       end
 
       private
