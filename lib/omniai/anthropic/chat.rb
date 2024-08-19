@@ -89,7 +89,7 @@ module OmniAI
 
       # @return [Array<Hash>, nil]
       def tools_payload
-        @tools&.map { |tool| tool.serialize(context:) }
+        @tools.map { |tool| tool.serialize(context:) } if @tools&.any?
       end
     end
   end
