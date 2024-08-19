@@ -29,6 +29,8 @@ module OmniAI
 
       # @return [Context]
       CONTEXT = Context.build do |context|
+        context.serializers[:tool] = ToolSerializer.method(:serialize)
+
         context.serializers[:file] = MediaSerializer.method(:serialize)
         context.serializers[:url] = MediaSerializer.method(:serialize)
 
@@ -87,13 +89,7 @@ module OmniAI
 
       # @return [Array<Hash>, nil]
       def tools_payload
-        @tools&.map do |tool|
-          {
-            name: tool.name,
-            description: tool.description,
-            input_schema: tool.parameters&.prepare,
-          }.compact
-        end
+        @tools&.map { |tool| tool.serialize(context:) }
       end
     end
   end
