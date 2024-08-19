@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (1.8.0)
+    omniai-anthropic (1.8.1)
       event_stream_parser
       omniai
       zeitwerk
@@ -42,7 +42,7 @@ GEM
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
       llhttp-ffi (~> 0.5.0)
-    http-cookie (1.0.6)
+    http-cookie (1.0.7)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
     json (2.7.2)
@@ -50,11 +50,11 @@ GEM
     llhttp-ffi (0.5.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    omniai (1.8.0)
+    omniai (1.8.1)
       event_stream_parser
       http
       zeitwerk
-    parallel (1.26.2)
+    parallel (1.26.3)
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
@@ -91,7 +91,7 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.32.0)
+    rubocop-ast (1.32.1)
       parser (>= 3.3.1.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
