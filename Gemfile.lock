@@ -50,6 +50,7 @@ GEM
     llhttp-ffi (0.5.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
+    logger (1.6.1)
     omniai (1.9.0)
       event_stream_parser
       http
@@ -124,6 +125,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  logger
   omniai-anthropic!
   rake
   rspec
