@@ -18,17 +18,18 @@ module OmniAI
         CLAUDE_2_1 = 'claude-2.1'
 
         CLAUDE_3_HAIKU_20240307 = 'claude-3-haiku-20240307'
+        CLAUDE_3_5_HAIKU_20241022 = 'claude-3-5-haiku-20241022'
         CLAUDE_3_OPUS_20240229 = 'claude-3-opus-20240229'
         CLAUDE_3_SONNET_20240209 = 'claude-3-sonnet-20240229'
         CLAUDE_3_SONNET_20240307 = 'claude-3-sonnet-20240307'
         CLAUDE_3_5_SONNET_20240620 = 'claude-3-5-sonnet-20240620'
         CLAUDE_3_5_SONNET_20241022 = 'claude-3-5-sonnet-20241022'
 
-        CLAUDE_3_HAIKU_LATEST = CLAUDE_3_HAIKU_20240307
+        CLAUDE_3_5_HAIKU_LATEST = 'claude-3-5-haiku-latest'
         CLAUDE_3_OPUS_LATEST = 'claude-3-opus-latest'
         CLAUDE_3_5_SONNET_LATEST = 'claude-3-5-sonnet-latest'
 
-        CLAUDE_HAIKU = CLAUDE_3_HAIKU_LATEST
+        CLAUDE_HAIKU = CLAUDE_3_5_HAIKU_LATEST
         CLAUDE_OPUS = CLAUDE_3_OPUS_LATEST
         CLAUDE_SONNET = CLAUDE_3_5_SONNET_LATEST
       end
