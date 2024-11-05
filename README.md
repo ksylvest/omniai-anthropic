@@ -1,5 +1,11 @@
 # OmniAI::Anthropic
 
+[![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ksylvest/omniai-anthropic/blob/main/LICENSE)
+[![RubyGems](https://img.shields.io/gem/v/omniai-anthropic)](https://rubygems.org/gems/omniai-anthropic)
+[![GitHub](https://img.shields.io/badge/github-repo-blue.svg)](https://github.com/ksylvest/omniai-anthropic)
+[![Yard](https://img.shields.io/badge/docs-site-blue.svg)](https://omniai-anthropic.ksylvest.com)
+[![CircleCI](https://img.shields.io/circleci/build/github/ksylvest/omniai-anthropic)](https://circleci.com/gh/ksylvest/omniai-anthropic)
+
 An Anthropic implementation of the [OmniAI](https://github.com/ksylvest/omniai) APIs.
 
 ## Installation
