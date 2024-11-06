@@ -51,7 +51,7 @@ GEM
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
     logger (1.6.1)
-    omniai (1.9.1)
+    omniai (1.9.2)
       event_stream_parser
       http
       zeitwerk
