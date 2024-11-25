@@ -25,12 +25,14 @@ module OmniAI
       # @param api_key [String] optional - defaults to `OmniAI::Anthropic.config.api_key`
       # @param host [String] optional - defaults to `OmniAI::Anthropic.config.host`
       # @param version [String] optional - defaults to `OmniAI::Anthropic.config.version`
+      # @param beta [String] optional - defaults to `OmniAI::Anthropic.config.beta`
       # @param logger [Logger] optional - defaults to `OmniAI::Anthropic.config.logger`
       # @param timeout [Integer] optional - defaults to `OmniAI::Anthropic.config.timeout`
       def initialize(
         api_key: OmniAI::Anthropic.config.api_key,
         host: OmniAI::Anthropic.config.host,
         version: OmniAI::Anthropic.config.version,
+        beta: OmniAI::Anthropic.config.beta,
         logger: OmniAI::Anthropic.config.logger,
         timeout: OmniAI::Anthropic.config.timeout
       )
@@ -40,6 +42,7 @@ module OmniAI
 
         @host = host
         @version = version
+        @beta = beta
       end
 
       # @return [HTTP::Client]
@@ -47,6 +50,7 @@ module OmniAI
         @connection ||= super.headers({
           'x-api-key': @api_key,
           'anthropic-version': @version,
+          'anthropic-beta': @beta,
         }.compact)
       end
 
