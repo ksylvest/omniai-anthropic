@@ -104,3 +104,19 @@ JSON.parse(completion.text) # { "name": "Ringo" }
 ```
 
 [Anthropic API Reference `control-output-format`](https://docs.anthropic.com/en/docs/control-output-format)
+
+### Computers
+
+```bash
+sudo apt-get install convert # screenshots
+sudo apt-get install scrot # screenshots
+sudo apt-get install xdotool # mouse / keyboard
+```
+
+```ruby
+computer = OmniAI::Anthropic::Computer.new
+
+completion = client.chat(tools: [computer]) do |prompt|
+  prompt.user('Please signup for reddit')
+end
+```
