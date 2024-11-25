@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (1.9.4)
+    omniai-anthropic (1.9.5)
       event_stream_parser
       omniai
       zeitwerk
