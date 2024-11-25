@@ -12,6 +12,9 @@ RSpec/SpecFilePathFormat:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/ExampleLength:
+  Enabled: false
+
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
