@@ -37,6 +37,10 @@ module OmniAI
         RIGHT = 3
       end
 
+      # @attribute [rw] name
+      #   @return [String]
+      attr_accessor :name
+
       # @param name [String] optional
       # @param display_width_px [Integer]
       # @param display_height_px [Integer]
