@@ -13,7 +13,7 @@ module OmniAI
           parts = arrayify(message.content) + arrayify(message.tool_call_list)
           content = parts.map do |part|
             case part
-            when String then { type: 'text', text: part }
+            when String then { type: "text", text: part }
             else part.serialize(context:)
             end
           end
@@ -25,8 +25,8 @@ module OmniAI
         # @param context [OmniAI::Context]
         # @return [OmniAI::Chat::Message]
         def self.deserialize(data, context:)
-          role = data['role']
-          parts = arrayify(data['content']).map do |content|
+          role = data["role"]
+          parts = arrayify(data["content"]).map do |content|
             ContentSerializer.deserialize(content, context:)
           end
 

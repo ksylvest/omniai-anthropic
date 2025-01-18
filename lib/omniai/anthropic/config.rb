@@ -4,8 +4,8 @@ module OmniAI
   module Anthropic
     # Configuration for Anthropic.
     class Config < OmniAI::Config
-      DEFAULT_HOST = 'https://api.anthropic.com'
-      DEFAULT_VERSION = '2023-06-01'
+      DEFAULT_HOST = "https://api.anthropic.com"
+      DEFAULT_VERSION = "2023-06-01"
 
       # @!attribute [rw] version
       #   @return [String, nil] passed as `anthropic-version` if specified
@@ -22,10 +22,10 @@ module OmniAI
       # @param logger [Logger, nil] optional - defaults to
       # @param timeout [Integer, Hash, nil] optional
       def initialize(
-        api_key: ENV.fetch('ANTHROPIC_API_KEY', nil),
-        host: ENV.fetch('ANTHROPIC_HOST', DEFAULT_HOST),
-        version: ENV.fetch('ANTHROPIC_VERSION', DEFAULT_VERSION),
-        beta: ENV.fetch('ANTHROPIC_BETA', nil),
+        api_key: ENV.fetch("ANTHROPIC_API_KEY", nil),
+        host: ENV.fetch("ANTHROPIC_HOST", DEFAULT_HOST),
+        version: ENV.fetch("ANTHROPIC_VERSION", DEFAULT_VERSION),
+        beta: ENV.fetch("ANTHROPIC_BETA", nil),
         logger: nil,
         timeout: nil
       )

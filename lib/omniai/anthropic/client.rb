@@ -20,7 +20,7 @@ module OmniAI
     #
     #   client = OmniAI::Anthropic::Client.new
     class Client < OmniAI::Client
-      VERSION = 'v1'
+      VERSION = "v1"
 
       # @param api_key [String] optional - defaults to `OmniAI::Anthropic.config.api_key`
       # @param host [String] optional - defaults to `OmniAI::Anthropic.config.host`
@@ -48,9 +48,9 @@ module OmniAI
       # @return [HTTP::Client]
       def connection
         @connection ||= super.headers({
-          'x-api-key': @api_key,
-          'anthropic-version': @version,
-          'anthropic-beta': @beta,
+          "x-api-key": @api_key,
+          "anthropic-version": @version,
+          "anthropic-beta": @beta,
         }.compact)
       end
 

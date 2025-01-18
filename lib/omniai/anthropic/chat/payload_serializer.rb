@@ -19,7 +19,7 @@ module OmniAI
         # @param context [OmniAI::Context]
         # @return [OmniAI::Chat::Payload]
         def self.deserialize(data, context:)
-          usage = OmniAI::Chat::Usage.deserialize(data['usage'], context:) if data['usage']
+          usage = OmniAI::Chat::Usage.deserialize(data["usage"], context:) if data["usage"]
           choice = OmniAI::Chat::Choice.deserialize(data, context:)
 
           OmniAI::Chat::Payload.new(choices: [choice], usage:)

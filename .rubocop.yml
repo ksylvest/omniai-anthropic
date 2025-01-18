@@ -1,9 +1,9 @@
+inherit_gem:
+  rubocop-basic: rubocop.yml
+
 require:
   - rubocop-rake
   - rubocop-rspec
-
-AllCops:
-  NewCops: enable
 
 RSpec/SpecFilePathFormat:
   CustomTransform:
@@ -15,20 +15,8 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/ExampleLength:
   Enabled: false
 
-Layout/FirstHashElementIndentation:
-  EnforcedStyle: consistent
-
-Layout/FirstArrayElementIndentation:
-  EnforcedStyle: consistent
-
 Metrics/MethodLength:
   Enabled: false
 
 Metrics/ParameterLists:
   Enabled: false
-
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: consistent_comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: consistent_comma

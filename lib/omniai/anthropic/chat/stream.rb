@@ -6,13 +6,13 @@ module OmniAI
       # A stream given when streaming.
       class Stream < OmniAI::Chat::Stream
         module Type
-          PING = 'ping'
-          MESSAGE_START = 'message_start'
-          MESSAGE_STOP = 'message_stop'
-          MESSAGE_DELTA = 'message_delta'
-          CONTENT_BLOCK_START = 'content_block_start'
-          CONTENT_BLOCK_STOP = 'content_block_stop'
-          CONTENT_BLOCK_DELTA = 'content_block_delta'
+          PING = "ping"
+          MESSAGE_START = "message_start"
+          MESSAGE_STOP = "message_stop"
+          MESSAGE_DELTA = "message_delta"
+          CONTENT_BLOCK_START = "content_block_start"
+          CONTENT_BLOCK_STOP = "content_block_stop"
+          CONTENT_BLOCK_DELTA = "content_block_delta"
         end
 
         # Process the stream into chunks by event.
@@ -22,7 +22,7 @@ module OmniAI
             return unless @content
 
             OmniAI::Chat::Payload.deserialize(@message.merge({
-              'content' => @content,
+              "content" => @content,
             }), context:)
           end
 
@@ -30,7 +30,7 @@ module OmniAI
           #
           # @param data [Hash]
           def message_start(data)
-            @message = data['message']
+            @message = data["message"]
           end
 
           # Handler for Type::MESSAGE_STOP
@@ -58,11 +58,11 @@ module OmniAI
           #
           # @param data [Hash]
           def content_block_delta(data)
-            @content = [{ 'type' => 'text', 'text' => data['delta']['text'] }]
+            @content = [{ "type" => "text", "text" => data["delta"]["text"] }]
           end
         end
 
-        protected
+      protected
 
         def builder
           @builder ||= Builder.new

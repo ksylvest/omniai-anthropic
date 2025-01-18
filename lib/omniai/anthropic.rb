@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'event_stream_parser'
-require 'omniai'
-require 'zeitwerk'
+require "event_stream_parser"
+require "omniai"
+require "zeitwerk"
 
 loader = Zeitwerk::Loader.for_gem
 loader.push_dir(__dir__, namespace: OmniAI)

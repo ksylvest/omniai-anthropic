@@ -12,7 +12,7 @@ module OmniAI
           function = tool_call.function.serialize(context:)
           {
             id: tool_call.id,
-            type: 'tool_use',
+            type: "tool_use",
           }.merge(function)
         end
 
@@ -21,7 +21,7 @@ module OmniAI
         # @return [OmniAI::Chat::ToolCall]
         def self.deserialize(data, context:)
           function = OmniAI::Chat::Function.deserialize(data, context:)
-          OmniAI::Chat::ToolCall.new(id: data['id'], function:)
+          OmniAI::Chat::ToolCall.new(id: data["id"], function:)
         end
       end
     end

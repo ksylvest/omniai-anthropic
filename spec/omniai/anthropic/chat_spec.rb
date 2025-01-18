@@ -3,24 +3,24 @@
 RSpec.describe OmniAI::Anthropic::Chat do
   let(:client) { OmniAI::Anthropic::Client.new }
 
-  describe '#completion' do
+  describe "#completion" do
     subject(:completion) { described_class.process!(prompt, client:, model:) }
 
     let(:model) { OmniAI::Anthropic::Chat::Model::CLAUDE_HAIKU }
 
-    context 'with a string prompt' do
-      let(:prompt) { 'Tell me a joke!' }
+    context "with a string prompt" do
+      let(:prompt) { "Tell me a joke!" }
 
       before do
-        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               {
-                role: 'user',
+                role: "user",
                 content: [
                   {
-                    type: 'text',
-                    text: 'Tell me a joke!',
+                    type: "text",
+                    text: "Tell me a joke!",
                   },
                 ],
               },
@@ -28,13 +28,13 @@ RSpec.describe OmniAI::Anthropic::Chat do
             model:,
           }))
           .to_return_json(body: {
-            type: 'message',
-            role: 'assistant',
+            type: "message",
+            role: "assistant",
             model:,
             content: [
               {
-                type: 'text',
-                text: 'Two elephants fall off a cliff. Boom! Boom!',
+                type: "text",
+                text: "Two elephants fall off a cliff. Boom! Boom!",
               },
             ],
             usage: {
@@ -44,28 +44,28 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.text).to eql('Two elephants fall off a cliff. Boom! Boom!') }
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
     end
 
-    context 'with an array prompt' do
+    context "with an array prompt" do
       let(:prompt) do
         OmniAI::Chat::Prompt.build do |prompt|
-          prompt.system('You are a helpful assistant.')
-          prompt.user('What is the capital of Canada?')
+          prompt.system("You are a helpful assistant.")
+          prompt.user("What is the capital of Canada?")
         end
       end
 
       before do
-        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
-            system: 'You are a helpful assistant.',
+            system: "You are a helpful assistant.",
             messages: [
               {
-                role: 'user',
+                role: "user",
                 content: [
                   {
-                    type: 'text',
-                    text: 'What is the capital of Canada?',
+                    type: "text",
+                    text: "What is the capital of Canada?",
                   },
                 ],
               },
@@ -73,13 +73,13 @@ RSpec.describe OmniAI::Anthropic::Chat do
             model:,
           }))
           .to_return_json(body: {
-            type: 'message',
-            role: 'assistant',
+            type: "message",
+            role: "assistant",
             model:,
             content: [
               {
-                type: 'text',
-                text: 'The capital of Canada is Ottawa.',
+                type: "text",
+                text: "The capital of Canada is Ottawa.",
               },
             ],
             usage: {
@@ -89,25 +89,25 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.text).to eql('The capital of Canada is Ottawa.') }
+      it { expect(completion.text).to eql("The capital of Canada is Ottawa.") }
     end
 
-    context 'with a temperature' do
+    context "with a temperature" do
       subject(:completion) { described_class.process!(prompt, client:, model:, temperature:) }
 
-      let(:prompt) { 'Pick a number between 1 and 5.' }
+      let(:prompt) { "Pick a number between 1 and 5." }
       let(:temperature) { 2.0 }
 
       before do
-        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               {
-                role: 'user',
+                role: "user",
                 content: [
                   {
-                    type: 'text',
-                    text: 'Pick a number between 1 and 5.',
+                    type: "text",
+                    text: "Pick a number between 1 and 5.",
                   },
                 ],
               },
@@ -116,13 +116,13 @@ RSpec.describe OmniAI::Anthropic::Chat do
             temperature:,
           }))
           .to_return_json(body: {
-            type: 'message',
-            role: 'assistant',
+            type: "message",
+            role: "assistant",
             model:,
             content: [
               {
-                type: 'text',
-                text: '3',
+                type: "text",
+                text: "3",
               },
             ],
             usage: {
@@ -132,30 +132,30 @@ RSpec.describe OmniAI::Anthropic::Chat do
           })
       end
 
-      it { expect(completion.text).to eql('3') }
+      it { expect(completion.text).to eql("3") }
     end
 
-    context 'when formatting as JSON' do
+    context "when formatting as JSON" do
       subject(:completion) { described_class.process!(prompt, client:, model:, format: :json) }
 
       let(:prompt) do
         OmniAI::Chat::Prompt.build do |prompt|
           prompt.system(OmniAI::Chat::JSON_PROMPT)
-          prompt.user('What is the name of the dummer for the Beatles?')
+          prompt.user("What is the name of the dummer for the Beatles?")
         end
       end
 
       before do
-        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             system: OmniAI::Chat::JSON_PROMPT,
             messages: [
               {
-                role: 'user',
+                role: "user",
                 content: [
                   {
-                    type: 'text',
-                    text: 'What is the name of the dummer for the Beatles?',
+                    type: "text",
+                    text: "What is the name of the dummer for the Beatles?",
                   },
                 ],
               },
@@ -163,12 +163,12 @@ RSpec.describe OmniAI::Anthropic::Chat do
             model:,
           }))
           .to_return_json(body: {
-            type: 'message',
-            role: 'assistant',
+            type: "message",
+            role: "assistant",
             model:,
             content: [
               {
-                type: 'text',
+                type: "text",
                 text: '{ "name": "Ringo" }',
               },
             ],
@@ -182,22 +182,22 @@ RSpec.describe OmniAI::Anthropic::Chat do
       it { expect(completion.text).to eql('{ "name": "Ringo" }') }
     end
 
-    context 'when streaming' do
+    context "when streaming" do
       subject(:completion) { described_class.process!(prompt, client:, model:, stream:) }
 
-      let(:prompt) { 'Tell me a story.' }
+      let(:prompt) { "Tell me a story." }
       let(:stream) { proc { |chunk| } }
 
       before do
-        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               {
-                role: 'user',
+                role: "user",
                 content: [
                   {
-                    type: 'text',
-                    text: 'Tell me a story.',
+                    type: "text",
+                    text: "Tell me a story.",
                   },
                 ],
               },
@@ -234,52 +234,52 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
     end
 
-    context 'when using files / URLs' do
+    context "when using files / URLs" do
       let(:io) { Tempfile.new }
 
       let(:prompt) do
         OmniAI::Chat::Prompt.build do |prompt|
           prompt.user do |message|
-            message.text('What are these photos of?')
-            message.url('https://localhost/cat.jpg', 'image/jpeg')
-            message.url('https://localhost/dog.jpg', 'image/jpeg')
-            message.file(io, 'image/jpeg')
+            message.text("What are these photos of?")
+            message.url("https://localhost/cat.jpg", "image/jpeg")
+            message.url("https://localhost/dog.jpg", "image/jpeg")
+            message.file(io, "image/jpeg")
           end
         end
       end
 
       before do
-        stub_request(:get, 'https://localhost/cat.jpg').to_return(body: 'cat')
-        stub_request(:get, 'https://localhost/dog.jpg').to_return(body: 'dog')
-        stub_request(:post, 'https://api.anthropic.com/v1/messages')
+        stub_request(:get, "https://localhost/cat.jpg").to_return(body: "cat")
+        stub_request(:get, "https://localhost/dog.jpg").to_return(body: "dog")
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               {
-                role: 'user',
+                role: "user",
                 content: [
-                  { type: 'text', text: 'What are these photos of?' },
-                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'Y2F0' } },
-                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'ZG9n' } },
-                  { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: '' } },
+                  { type: "text", text: "What are these photos of?" },
+                  { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "Y2F0" } },
+                  { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "ZG9n" } },
+                  { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "" } },
                 ],
               },
             ],
             model:,
           }))
           .to_return_json(body: {
-            type: 'message',
-            role: 'assistant',
+            type: "message",
+            role: "assistant",
             model:,
             content: [
               {
-                type: 'text',
-                text: 'They are a photo of a cat and a photo of a dog.',
+                type: "text",
+                text: "They are a photo of a cat and a photo of a dog.",
               },
             ],
           })
       end
 
-      it { expect(completion.text).to eql('They are a photo of a cat and a photo of a dog.') }
+      it { expect(completion.text).to eql("They are a photo of a cat and a photo of a dog.") }
     end
   end
 end
