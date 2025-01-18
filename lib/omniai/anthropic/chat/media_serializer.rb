@@ -11,7 +11,7 @@ module OmniAI
           {
             type: media.kind, # i.e. 'image' / 'video' / 'audio' / ...
             source: {
-              type: 'base64',
+              type: "base64",
               media_type: media.type, # i.e. 'image/jpeg' / 'video/ogg' / 'audio/mpeg' / ...
               data: media.data,
             },

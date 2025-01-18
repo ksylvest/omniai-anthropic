@@ -13,21 +13,21 @@ module OmniAI
     #   completion.text # '...'
     class Chat < OmniAI::Chat
       module Model
-        CLAUDE_INSTANT_1_0 = 'claude-instant-1.2'
-        CLAUDE_2_0 = 'claude-2.0'
-        CLAUDE_2_1 = 'claude-2.1'
+        CLAUDE_INSTANT_1_0 = "claude-instant-1.2"
+        CLAUDE_2_0 = "claude-2.0"
+        CLAUDE_2_1 = "claude-2.1"
 
-        CLAUDE_3_HAIKU_20240307 = 'claude-3-haiku-20240307'
-        CLAUDE_3_5_HAIKU_20241022 = 'claude-3-5-haiku-20241022'
-        CLAUDE_3_OPUS_20240229 = 'claude-3-opus-20240229'
-        CLAUDE_3_SONNET_20240209 = 'claude-3-sonnet-20240229'
-        CLAUDE_3_SONNET_20240307 = 'claude-3-sonnet-20240307'
-        CLAUDE_3_5_SONNET_20240620 = 'claude-3-5-sonnet-20240620'
-        CLAUDE_3_5_SONNET_20241022 = 'claude-3-5-sonnet-20241022'
+        CLAUDE_3_HAIKU_20240307 = "claude-3-haiku-20240307"
+        CLAUDE_3_5_HAIKU_20241022 = "claude-3-5-haiku-20241022"
+        CLAUDE_3_OPUS_20240229 = "claude-3-opus-20240229"
+        CLAUDE_3_SONNET_20240209 = "claude-3-sonnet-20240229"
+        CLAUDE_3_SONNET_20240307 = "claude-3-sonnet-20240307"
+        CLAUDE_3_5_SONNET_20240620 = "claude-3-5-sonnet-20240620"
+        CLAUDE_3_5_SONNET_20241022 = "claude-3-5-sonnet-20241022"
 
-        CLAUDE_3_5_HAIKU_LATEST = 'claude-3-5-haiku-latest'
-        CLAUDE_3_OPUS_LATEST = 'claude-3-opus-latest'
-        CLAUDE_3_5_SONNET_LATEST = 'claude-3-5-sonnet-latest'
+        CLAUDE_3_5_HAIKU_LATEST = "claude-3-5-haiku-latest"
+        CLAUDE_3_OPUS_LATEST = "claude-3-opus-latest"
+        CLAUDE_3_5_SONNET_LATEST = "claude-3-5-sonnet-latest"
 
         CLAUDE_HAIKU = CLAUDE_3_5_HAIKU_LATEST
         CLAUDE_OPUS = CLAUDE_3_OPUS_LATEST
@@ -93,7 +93,7 @@ module OmniAI
         "/#{Client::VERSION}/messages"
       end
 
-      protected
+    protected
 
       # @return [Context]
       def context
@@ -109,7 +109,7 @@ module OmniAI
         [Message.new(role: OmniAI::Chat::Role::USER, content:)]
       end
 
-      private
+    private
 
       # @return [Array<Hash>, nil]
       def tools_payload
