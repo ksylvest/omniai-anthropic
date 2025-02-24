@@ -24,14 +24,16 @@ module OmniAI
         CLAUDE_3_SONNET_20240307 = "claude-3-sonnet-20240307"
         CLAUDE_3_5_SONNET_20240620 = "claude-3-5-sonnet-20240620"
         CLAUDE_3_5_SONNET_20241022 = "claude-3-5-sonnet-20241022"
+        CLAUDE_3_7_SONNET_20250219 = "claude-3-7-sonnet-20250219"
 
         CLAUDE_3_5_HAIKU_LATEST = "claude-3-5-haiku-latest"
         CLAUDE_3_OPUS_LATEST = "claude-3-opus-latest"
         CLAUDE_3_5_SONNET_LATEST = "claude-3-5-sonnet-latest"
+        CLAUDE_3_7_SONNET_LATEST = "claude-3-7-sonnet-latest"
 
         CLAUDE_HAIKU = CLAUDE_3_5_HAIKU_LATEST
         CLAUDE_OPUS = CLAUDE_3_OPUS_LATEST
-        CLAUDE_SONNET = CLAUDE_3_5_SONNET_LATEST
+        CLAUDE_SONNET = CLAUDE_3_7_SONNET_LATEST
       end
 
       DEFAULT_MODEL = Model::CLAUDE_SONNET
