@@ -186,7 +186,8 @@ RSpec.describe OmniAI::Anthropic::Chat do
       subject(:completion) { described_class.process!(prompt, client:, model:, stream:) }
 
       let(:prompt) { "Tell me a story." }
-      let(:stream) { proc { |chunk| } }
+      let(:stream) { proc { |chunk| chunks << chunk } }
+      let(:chunks) { [] }
 
       before do
         stub_request(:post, "https://api.anthropic.com/v1/messages")
@@ -227,8 +228,6 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
 
       it do
-        chunks = []
-        allow(stream).to receive(:call) { |chunk| chunks << chunk }
         completion
         expect(chunks.map(&:text)).to eql(%w[A B])
       end
