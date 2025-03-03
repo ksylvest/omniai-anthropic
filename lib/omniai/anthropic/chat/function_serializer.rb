@@ -6,6 +6,7 @@ module OmniAI
       # Overrides function serialize / deserialize.
       module FunctionSerializer
         # @param function [OmniAI::Chat::Function]
+        #
         # @return [Hash]
         def self.serialize(function, *)
           {
@@ -15,10 +16,12 @@ module OmniAI
         end
 
         # @param data [Hash]
+        #
         # @return [OmniAI::Chat::Function]
         def self.deserialize(data, *)
           name = data["name"]
           arguments = data["input"]
+
           OmniAI::Chat::Function.new(name:, arguments:)
         end
       end

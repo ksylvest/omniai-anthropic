@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.describe OmniAI::Anthropic::Chat::PayloadSerializer do
+RSpec.describe OmniAI::Anthropic::Chat::ResponseSerializer do
   let(:context) { OmniAI::Anthropic::Chat::CONTEXT }
 
   describe ".serialize" do
-    subject(:serialize) { described_class.serialize(payload, context:) }
+    subject(:serialize) { described_class.serialize(response, context:) }
 
-    let(:payload) { OmniAI::Chat::Payload.new(choices:, usage:) }
+    let(:response) { OmniAI::Chat::Response.new(data: {}, choices:, usage:) }
     let(:choices) { [OmniAI::Chat::Choice.new(message:)] }
     let(:message) { OmniAI::Chat::Message.new(role: "user", content: [text]) }
     let(:text) { OmniAI::Chat::Text.new("Greetings!") }
@@ -52,6 +52,6 @@ RSpec.describe OmniAI::Anthropic::Chat::PayloadSerializer do
       }
     end
 
-    it { is_expected.to be_a(OmniAI::Chat::Payload) }
+    it { is_expected.to be_a(OmniAI::Chat::Response) }
   end
 end
