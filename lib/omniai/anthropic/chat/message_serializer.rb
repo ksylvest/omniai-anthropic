@@ -7,10 +7,12 @@ module OmniAI
       module MessageSerializer
         # @param message [OmniAI::Chat::Message]
         # @param context [OmniAI::Context]
+        #
         # @return [Hash]
         def self.serialize(message, context:)
           role = message.role
-          parts = arrayify(message.content) + arrayify(message.tool_call_list)
+          parts = arrayify(message.content) + arrayify(message.tool_call_list&.entries)
+
           content = parts.map do |part|
             case part
             when String then { type: "text", text: part }
@@ -23,6 +25,7 @@ module OmniAI
 
         # @param data [Hash]
         # @param context [OmniAI::Context]
+        #
         # @return [OmniAI::Chat::Message]
         def self.deserialize(data, context:)
           role = data["role"]
@@ -30,8 +33,11 @@ module OmniAI
             ContentSerializer.deserialize(content, context:)
           end
 
-          tool_call_list = parts.select { |part| part.is_a?(OmniAI::Chat::ToolCall) }
-          content = parts.reject { |part| part.is_a?(OmniAI::Chat::ToolCall) }
+          tool_call_parts = parts.select { |part| part.is_a?(OmniAI::Chat::ToolCall) }
+          non_tool_call_parts = parts.reject { |part| part.is_a?(OmniAI::Chat::ToolCall) }
+
+          tool_call_list = OmniAI::Chat::ToolCallList.new(entries: tool_call_parts) if tool_call_parts.any?
+          content = non_tool_call_parts if non_tool_call_parts.any?
 
           OmniAI::Chat::Message.new(content:, role:, tool_call_list:)
         end

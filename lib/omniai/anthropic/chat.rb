@@ -61,7 +61,7 @@ module OmniAI
         context.deserializers[:message] = MessageSerializer.method(:deserialize)
 
         context.deserializers[:content] = ContentSerializer.method(:deserialize)
-        context.deserializers[:payload] = PayloadSerializer.method(:deserialize)
+        context.deserializers[:response] = ResponseSerializer.method(:deserialize)
       end
 
       # @return [Hash]

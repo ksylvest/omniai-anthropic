@@ -186,7 +186,8 @@ RSpec.describe OmniAI::Anthropic::Chat do
       subject(:completion) { described_class.process!(prompt, client:, model:, stream:) }
 
       let(:prompt) { "Tell me a story." }
-      let(:stream) { proc { |chunk| } }
+      let(:stream) { proc { |chunk| chunks << chunk } }
+      let(:chunks) { [] }
 
       before do
         stub_request(:post, "https://api.anthropic.com/v1/messages")
@@ -207,31 +208,29 @@ RSpec.describe OmniAI::Anthropic::Chat do
           }))
           .to_return(body: <<~STREAM)
             event: message_start
-            data: #{JSON.generate(type: 'message_start', message: { id: 'fake_id', model:, role: 'assistant' })}\n
+            data: #{JSON.generate(type: 'message_start', message: { id: 'fake_id', model:, role: 'assistant', content: [] })}
 
             event: content_block_start
-            data: #{JSON.generate(type: 'content_block_start', index: 0)}\n
+            data: #{JSON.generate(type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' })}
 
             event: content_block_delta
-            data: #{JSON.generate(type: 'content_block_delta', delta: { type: 'text_delta', text: 'A' })}\n
+            data: #{JSON.generate(type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: 'Hello' })}
 
             event: content_block_delta
-            data: #{JSON.generate(type: 'content_block_delta', delta: { type: 'text_delta', text: 'B' })}\n
+            data: #{JSON.generate(type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: ' ' })}
+
+            event: content_block_delta
+            data: #{JSON.generate(type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: 'World' })}
 
             event: content_block_stop
-            data: #{JSON.generate(type: 'content_block_stop', index: 0)}\n
+            data: #{JSON.generate(type: 'content_block_stop', index: 0)}
 
             event: message_stop
-            data: #{JSON.generate(type: 'message_stop')}\n
+            data: #{JSON.generate(type: 'message_stop')}
           STREAM
       end
 
-      it do
-        chunks = []
-        allow(stream).to receive(:call) { |chunk| chunks << chunk }
-        completion
-        expect(chunks.map(&:text)).to eql(%w[A B])
-      end
+      it { expect(completion.text).to eql("Hello World") }
     end
 
     context "when using files / URLs" do

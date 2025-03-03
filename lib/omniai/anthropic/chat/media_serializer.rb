@@ -5,7 +5,7 @@ module OmniAI
     class Chat
       # Overrides media serialize / deserialize.
       module MediaSerializer
-        # @param payload [OmniAI::Chat::Media]
+        # @param media [OmniAI::Chat::Media]
         # @return [Hash]
         def self.serialize(media, *)
           {
