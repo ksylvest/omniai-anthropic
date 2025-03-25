@@ -93,8 +93,8 @@ module OmniAI
       # @return [Array<Hash>]
       def perform(action:, text: nil, coordinate: nil) # rubocop:disable Metrics/CyclomaticComplexity
         case action
-        when Action::KEY then key(text: text)
-        when Action::TYPE then type(text: text)
+        when Action::KEY then key(text:)
+        when Action::TYPE then type(text:)
         when Action::CURSOR_POSITION then mouse_location
         when Action::LEFT_CLICK then click(button: Button::LEFT)
         when Action::MIDDLE_CLICK then click(button: Button::MIDDLE)
@@ -182,7 +182,7 @@ module OmniAI
         tempfile.rewind
         data = Base64.encode64(tempfile.read)
 
-        { type: "base64", media_type: "image/png", data: data }
+        { type: "base64", media_type: "image/png", data: }
       ensure
         tempfile.close
         tempfile.unlink

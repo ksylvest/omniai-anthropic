@@ -23,7 +23,7 @@ RSpec.describe OmniAI::Anthropic::Computer do
     it "calls perform" do
       allow(computer).to receive(:perform)
       computer.call({ "action" => action, "text" => text, "coordinate" => coordinate })
-      expect(computer).to have_received(:perform).with(action: action, text: text, coordinate: coordinate)
+      expect(computer).to have_received(:perform).with(action:, text:, coordinate:)
     end
   end
 
@@ -37,8 +37,8 @@ RSpec.describe OmniAI::Anthropic::Computer do
 
       it "types the key" do
         allow(computer).to receive(:key)
-        computer.perform(action:, text: text)
-        expect(computer).to have_received(:key).with(text: text)
+        computer.perform(action:, text:)
+        expect(computer).to have_received(:key).with(text:)
       end
     end
 
@@ -48,8 +48,8 @@ RSpec.describe OmniAI::Anthropic::Computer do
 
       it "types the text" do
         allow(computer).to receive(:type)
-        computer.perform(action:, text: text)
-        expect(computer).to have_received(:type).with(text: text)
+        computer.perform(action:, text:)
+        expect(computer).to have_received(:type).with(text:)
       end
     end
 
@@ -70,8 +70,8 @@ RSpec.describe OmniAI::Anthropic::Computer do
 
       it "moves the mouse" do
         allow(computer).to receive(:mouse_move)
-        computer.perform(action:, coordinate: coordinate)
-        expect(computer).to have_received(:mouse_move).with(coordinate: coordinate)
+        computer.perform(action:, coordinate:)
+        expect(computer).to have_received(:mouse_move).with(coordinate:)
       end
     end
 

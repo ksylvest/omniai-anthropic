@@ -127,7 +127,7 @@ module OmniAI
           content = @data["content"][index]
           content["text"] += data["delta"]["text"]
 
-          block&.call(OmniAI::Chat::Delta.new(text: text))
+          block&.call(OmniAI::Chat::Delta.new(text:))
         end
 
         # Handler for Type::CONTENT_BLOCK_DELTA w/ ContentBlockDeltaType::INPUT_JSON_DELTA
