@@ -6,8 +6,32 @@ RSpec.describe OmniAI::Anthropic::Chat::ToolSerializer do
   describe "#serialize" do
     subject(:serialize) { tool.serialize(context:) }
 
-    let(:tool) { OmniAI::Tool.new(-> { "..." }, name: "weather", description: "Finds the current weather") }
+    let(:tool) do
+      OmniAI::Tool.new(
+        -> { "..." },
+        name: "weather",
+        description: "Finds the current weather",
+        parameters: OmniAI::Tool::Parameters.new(
+          properties: {
+            location: OmniAI::Tool::Property.string,
+          },
+          required: ["location"]
+        )
+      )
+    end
 
-    it { expect(serialize).to eql(name: "weather", description: "Finds the current weather") }
+    it "serializes the tool" do
+      expect(serialize).to eql({
+        name: "weather",
+        description: "Finds the current weather",
+        input_schema: {
+          type: "object",
+          properties: {
+            location: { type: "string" },
+          },
+          required: ["location"],
+        },
+      })
+    end
   end
 end
