@@ -70,7 +70,7 @@ module OmniAI
           model: @model,
           messages:,
           system:,
-          stream: @stream.nil? ? nil : !@stream.nil?,
+          stream: stream? || nil,
           temperature: @temperature,
           tools: tools_payload,
         }).compact
