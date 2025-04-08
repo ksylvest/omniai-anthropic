@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "omniai/anthropic"
+
+client = OmniAI::Anthropic::Client.new
+
+client.chat(stream: $stdout) do |prompt|
+  prompt.user do |message|
+    message.url("https://vancouver.ca/files/cov/other-sectors-tourism.PDF", "application/pdf")
+    message.text("In Vancouver per the attached document how many jobs supported tourism in 2015 / 2016 / 2017?")
+  end
+end

@@ -42,8 +42,8 @@ module OmniAI
       CONTEXT = Context.build do |context|
         context.serializers[:tool] = ToolSerializer.method(:serialize)
 
-        context.serializers[:file] = MediaSerializer.method(:serialize)
-        context.serializers[:url] = MediaSerializer.method(:serialize)
+        context.serializers[:file] = FileSerializer.method(:serialize)
+        context.serializers[:url] = URLSerializer.method(:serialize)
 
         context.serializers[:choice] = ChoiceSerializer.method(:serialize)
         context.deserializers[:choice] = ChoiceSerializer.method(:deserialize)
