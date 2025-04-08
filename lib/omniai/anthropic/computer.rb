@@ -117,8 +117,6 @@ module OmniAI
         "stdout=#{stdout.inspect} stderr=#{stderr.inspect} status=#{status}"
       end
 
-      # @param cmd [String]
-      #
       # @return [String]
       def xdotool(...)
         shell("xdotool", ...)
