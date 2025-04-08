@@ -144,7 +144,7 @@ module OmniAI
 
         # Handler for Type::CONTENT_BLOCK_STOP
         #
-        # @param _data [Hash]
+        # @param data [Hash]
         def content_block_stop(data)
           index = data["index"]
           content = @data["content"][index]
