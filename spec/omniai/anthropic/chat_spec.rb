@@ -248,8 +248,6 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
 
       before do
-        stub_request(:get, "https://localhost/cat.jpg").to_return(body: "cat")
-        stub_request(:get, "https://localhost/dog.jpg").to_return(body: "dog")
         stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
@@ -257,8 +255,8 @@ RSpec.describe OmniAI::Anthropic::Chat do
                 role: "user",
                 content: [
                   { type: "text", text: "What are these photos of?" },
-                  { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "Y2F0" } },
-                  { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "ZG9n" } },
+                  { type: "image", source: { type: "url", url: "https://localhost/cat.jpg" } },
+                  { type: "image", source: { type: "url", url: "https://localhost/dog.jpg" } },
                   { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "" } },
                 ],
               },

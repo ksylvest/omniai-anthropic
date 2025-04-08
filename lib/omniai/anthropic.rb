@@ -6,6 +6,7 @@ require "zeitwerk"
 
 loader = Zeitwerk::Loader.for_gem
 loader.push_dir(__dir__, namespace: OmniAI)
+loader.inflector.inflect "url_serializer" => "URLSerializer"
 loader.setup
 
 module OmniAI
