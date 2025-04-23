@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (2.4.0)
+    omniai-anthropic (2.4.1)
       event_stream_parser
       omniai (~> 2.4)
       zeitwerk
@@ -66,6 +66,7 @@ GEM
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.2.1)
+    redcarpet (3.6.1)
     regexp_parser (2.10.0)
     rexml (3.4.1)
     rspec (3.13.0)
@@ -138,6 +139,7 @@ DEPENDENCIES
   logger
   omniai-anthropic!
   rake
+  redcarpet
   rspec
   rspec_junit_formatter
   rubocop
