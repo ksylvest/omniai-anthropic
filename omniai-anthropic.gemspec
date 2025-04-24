@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "event_stream_parser"
-  spec.add_dependency "omniai", "~> 2.4"
+  spec.add_dependency "omniai", "~> 2.5"
   spec.add_dependency "zeitwerk"
 end
