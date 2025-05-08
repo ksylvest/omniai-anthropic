@@ -11,9 +11,9 @@ RSpec.describe OmniAI::Anthropic::Chat::ToolSerializer do
         -> { "..." },
         name: "weather",
         description: "Finds the current weather",
-        parameters: OmniAI::Tool::Parameters.new(
+        parameters: OmniAI::Schema.object(
           properties: {
-            location: OmniAI::Tool::Property.string,
+            location: OmniAI::Schema.string,
           },
           required: ["location"]
         )

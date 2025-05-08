@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (2.5.0)
+    omniai-anthropic (2.6.0)
       event_stream_parser
-      omniai (~> 2.5)
+      omniai (~> 2.6)
       zeitwerk
 
 GEM
@@ -52,7 +52,7 @@ GEM
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
     logger (1.7.0)
-    omniai (2.5.0)
+    omniai (2.6.0)
       event_stream_parser
       http
       logger
@@ -62,7 +62,7 @@ GEM
       ast (~> 2.4.1)
       racc
     prism (1.4.0)
-    public_suffix (6.0.1)
+    public_suffix (6.0.2)
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.2.1)
@@ -75,13 +75,13 @@ GEM
       rspec-mocks (~> 3.13.0)
     rspec-core (3.13.3)
       rspec-support (~> 3.13.0)
-    rspec-expectations (3.13.3)
+    rspec-expectations (3.13.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.2)
+    rspec-mocks (3.13.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-support (3.13.2)
+    rspec-support (3.13.3)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (1.75.5)
