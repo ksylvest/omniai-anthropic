@@ -11,7 +11,7 @@ module OmniAI
           {
             name: tool.name,
             description: tool.description,
-            input_schema: tool.parameters.is_a?(Tool::Parameters) ? tool.parameters.serialize : tool.parameters,
+            input_schema: tool.parameters.is_a?(OmniAI::Schema::Object) ? tool.parameters.serialize : tool.parameters,
           }.compact
         end
       end
