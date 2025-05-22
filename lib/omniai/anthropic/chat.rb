@@ -33,12 +33,12 @@ module OmniAI
 
         CLAUDE_SONNET_4_20250514 = "claude-sonnet-4-20250514"
         CLAUDE_OPUS_4_20250514 = "claude-opus-4-20250514"
-        CLAUDE_OPUS_4 = "claude-opus-4-0"
-        CLAUDE_SONNET_4 = "claude-sonnet-4-0"
+        CLAUDE_OPUS_4_0 = "claude-opus-4-0"
+        CLAUDE_SONNET_4_0 = "claude-sonnet-4-0"
 
         CLAUDE_HAIKU = CLAUDE_3_5_HAIKU_LATEST
-        CLAUDE_OPUS = CLAUDE_OPUS_4
-        CLAUDE_SONNET = CLAUDE_SONNET_4
+        CLAUDE_OPUS = CLAUDE_OPUS_4_0
+        CLAUDE_SONNET = CLAUDE_SONNET_4_0
       end
 
       DEFAULT_MODEL = Model::CLAUDE_SONNET
