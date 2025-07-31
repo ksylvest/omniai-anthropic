@@ -5,7 +5,6 @@
 [![GitHub](https://img.shields.io/badge/github-repo-blue.svg)](https://github.com/ksylvest/omniai-anthropic)
 [![Yard](https://img.shields.io/badge/docs-site-blue.svg)](https://omniai-anthropic.ksylvest.com)
 [![CircleCI](https://img.shields.io/circleci/build/github/ksylvest/omniai-anthropic)](https://circleci.com/gh/ksylvest/omniai-anthropic)
-[![Maintainability](https://qlty.sh/gh/ksylvest/projects/omniai-anthropic/maintainability.svg)](https://qlty.sh/gh/ksylvest/projects/omniai-anthropic)
 
 An Anthropic implementation of the [OmniAI](https://github.com/ksylvest/omniai)
 APIs.
