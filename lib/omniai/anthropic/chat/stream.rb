@@ -150,6 +150,7 @@ module OmniAI
           content = @data["content"][index]
 
           return unless content["partial_json"]
+          return if content["partial_json"].empty?
 
           content["input"] = JSON.parse(content["partial_json"])
           content.delete("partial_json")
