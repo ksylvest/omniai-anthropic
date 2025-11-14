@@ -57,6 +57,7 @@ GEM
       http
       logger
       zeitwerk
+    openssl (3.3.2)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -78,7 +79,7 @@ GEM
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.6)
+    rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
@@ -138,6 +139,7 @@ PLATFORMS
 DEPENDENCIES
   logger
   omniai-anthropic!
+  openssl (~> 3.3)
   rake
   redcarpet
   rspec
