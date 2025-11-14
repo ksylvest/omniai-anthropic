@@ -94,10 +94,11 @@ module OmniAI
 
       # @return [String, nil]
       def system
-        messages = @prompt.messages.filter(&:system?)
-        return if messages.empty?
+        parts = @prompt.messages.filter(&:system?).filter(&:text?).map(&:text)
+        parts << formatting if formatting?
+        return if parts.empty?
 
-        messages.filter(&:text?).map(&:text).join("\n\n")
+        parts.join("\n\n")
       end
 
       # @return [String]
@@ -122,6 +123,20 @@ module OmniAI
       end
 
     private
+
+      # @return [Boolean]
+      def formatting?
+        !@format.nil?
+      end
+
+      # @return [String, nil]
+      def formatting
+        case @format
+        when OmniAI::Schema::Format then @format.prompt
+        when :text then "You must respond with TEXT."
+        when :json then "You must respond with JSON."
+        end
+      end
 
       # @return [Array<Hash>, nil]
       def tools_payload

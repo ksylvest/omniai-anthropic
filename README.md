@@ -98,14 +98,19 @@ client.chat('Be poetic.', stream:)
 
 #### Format
 
-`format` takes an optional symbol (`:json`) and modifies requests to send
-additional system text requesting JSON:
+`format` takes an optional symbol (`:json`, `:text`, or `OmniAI::Schema::Format`) and modifies the system message to include additional context for formatting:
 
 ```ruby
+format = OmniAI::Schema.format(name: "Contact", schema: OmniAI::Schema.object(
+  properties: {
+    name: OmniAI::Schema.string,
+  },
+  required: %i[name]
+))
 completion = client.chat(format: :json) do |prompt|
-  prompt.system(OmniAI::Chat::JSON_PROMPT)
   prompt.user('What is the name of the drummer for the Beatles?')
-JSON.parse(completion.text) # { "name": "Ringo" }
+end
+format.parse(completion.text) # { "name": "Ringo" }
 ```
 
 [Anthropic API Reference `control-output-format`](https://docs.anthropic.com/en/docs/control-output-format)
