@@ -5,7 +5,6 @@ source "https://rubygems.org"
 gemspec
 
 gem "logger"
-gem "openssl"
 gem "rake"
 gem "redcarpet"
 gem "rspec"

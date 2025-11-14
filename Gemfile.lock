@@ -1,9 +1,10 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (2.9.0)
+    omniai-anthropic (2.9.1)
       event_stream_parser
       omniai (~> 2.9)
+      openssl
       zeitwerk
 
 GEM
@@ -139,7 +140,6 @@ PLATFORMS
 DEPENDENCIES
   logger
   omniai-anthropic!
-  openssl
   rake
   redcarpet
   rspec
