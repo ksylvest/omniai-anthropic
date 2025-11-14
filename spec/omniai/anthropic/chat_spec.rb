@@ -135,12 +135,20 @@ RSpec.describe OmniAI::Anthropic::Chat do
       it { expect(completion.text).to eql("3") }
     end
 
-    context "when formatting as JSON" do
-      subject(:completion) { described_class.process!(prompt, client:, model:, format: :json) }
+    context "when formatting with a schema" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, format:) }
+
+      let(:format) do
+        OmniAI::Schema.format(name: "Contact", schema: OmniAI::Schema.object(
+          properties: {
+            name: OmniAI::Schema.string,
+          },
+          required: %i[name]
+        ))
+      end
 
       let(:prompt) do
         OmniAI::Chat::Prompt.build do |prompt|
-          prompt.system(OmniAI::Chat::JSON_PROMPT)
           prompt.user("What is the name of the dummer for the Beatles?")
         end
       end
@@ -148,7 +156,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
       before do
         stub_request(:post, "https://api.anthropic.com/v1/messages")
           .with(body: OmniAI::Anthropic.config.chat_options.merge({
-            system: OmniAI::Chat::JSON_PROMPT,
+            system: anything,
             messages: [
               {
                 role: "user",

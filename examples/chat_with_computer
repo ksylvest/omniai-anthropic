@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "omniai/anthropic"
+
+OmniAI::Anthropic.configure do |config|
+  config.beta = "computer-use-2025-01-24"
+end
+
+client = OmniAI::Anthropic::Client.new
+
+logger = Logger.new($stdout)
+logger.level = Logger::DEBUG
+
+computer = OmniAI::Anthropic::Computer.new(
+  display_width_px: 2560,
+  display_height_px: 1440,
+  display_number: 1,
+  name: "computer",
+  type: "computer_20250124",
+  logger:
+)
+
+client.chat(stream: $stdout, tools: [computer]) do |prompt|
+  prompt.user do |message|
+    message.url("https://vancouver.ca/files/cov/other-sectors-tourism.PDF", "application/pdf")
+    message.text("Please open Safari and signup for an account on reddit")
+  end
+end
