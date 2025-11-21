@@ -30,6 +30,7 @@ RSpec.describe OmniAI::Anthropic::Chat::ToolSerializer do
             location: { type: "string" },
           },
           required: ["location"],
+          additionalProperties: false,
         },
       })
     end
