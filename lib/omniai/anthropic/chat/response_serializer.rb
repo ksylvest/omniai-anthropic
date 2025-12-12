@@ -3,7 +3,9 @@
 module OmniAI
   module Anthropic
     class Chat
-      # Overrides response deserialize.
+      # Overrides response serialize / deserialize.
+      module ResponseSerializer
+        # Overrides response deserialize.
         # @param data [Hash]
         # @param context [OmniAI::Context]
         #
