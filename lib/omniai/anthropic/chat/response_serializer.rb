@@ -3,19 +3,7 @@
 module OmniAI
   module Anthropic
     class Chat
-      # Overrides response serialize / deserialize.
-      module ResponseSerializer
-        # @param response [OmniAI::Chat::Response]
-        # @param context [OmniAI::Context]
-        #
-        # @return [Hash]
-        def self.serialize(response, context:)
-          usage = response.usage.serialize(context:)
-          choice = response.choice.serialize(context:)
-
-          choice.merge({ usage: })
-        end
-
+      # Overrides response deserialize.
         # @param data [Hash]
         # @param context [OmniAI::Context]
         #
