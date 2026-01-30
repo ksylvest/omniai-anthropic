@@ -130,3 +130,43 @@ completion = client.chat(tools: [computer]) do |prompt|
   prompt.user('Please signup for reddit')
 end
 ```
+
+### Extended Thinking
+
+Extended thinking allows Claude to show its reasoning process. This is useful for complex problems where you want to see the model's thought process.
+
+```ruby
+# Enable with default budget (10,000 tokens)
+response = client.chat("What is 25 * 25?", model: "claude-sonnet-4-20250514", thinking: true)
+
+# Or specify a custom budget
+response = client.chat("Solve this complex problem...", model: "claude-sonnet-4-20250514", thinking: { budget_tokens: 20_000 })
+```
+
+When thinking is enabled:
+- Temperature is automatically set to 1 (required by Anthropic)
+- `max_tokens` is automatically adjusted to be greater than `budget_tokens`
+
+#### Accessing Thinking Content
+
+```ruby
+response.choices.first.message.contents.each do |content|
+  case content
+  when OmniAI::Chat::Thinking
+    puts "Thinking: #{content.thinking}"
+    puts "Signature: #{content.metadata[:signature]}" # Anthropic includes a signature
+  when OmniAI::Chat::Text
+    puts "Response: #{content.text}"
+  end
+end
+```
+
+#### Streaming with Thinking
+
+```ruby
+client.chat("What are the prime factors of 1234567?", model: "claude-sonnet-4-20250514", thinking: true, stream: $stdout)
+```
+
+The thinking content will stream first, followed by the response.
+
+[Anthropic API Reference `thinking`](https://docs.anthropic.com/en/docs/build-with-claude/thinking)

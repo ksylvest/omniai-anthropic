@@ -286,5 +286,88 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
       it { expect(completion.text).to eql("They are a photo of a cat and a photo of a dog.") }
     end
+
+    context "with thinking: true option" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, thinking: true) }
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: {
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "enabled", budget_tokens: 10_000 },
+            max_tokens: 18_000,
+          })
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
+
+    context "with thinking: { budget_tokens: 5_000 } option" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, thinking: { budget_tokens: 5_000 }) }
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: {
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "enabled", budget_tokens: 5_000 },
+            max_tokens: 13_000,
+          })
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
+
+    context "with thinking enabled and custom max_tokens" do
+      subject(:completion) do
+        described_class.process!(prompt, client:, model:, thinking: { budget_tokens: 5_000 }, max_tokens: 50_000)
+      end
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: {
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "enabled", budget_tokens: 5_000 },
+            max_tokens: 50_000,
+          })
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
   end
 end

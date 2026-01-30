@@ -17,11 +17,14 @@ module OmniAI
         module ContentBlockType
           TEXT = "text"
           TOOL_USE = "tool_use"
+          THINKING = "thinking"
         end
 
         module ContentBlockDeltaType
           TEXT_DELTA = "text_delta"
           INPUT_JSON_DELTA = "input_json_delta"
+          THINKING_DELTA = "thinking_delta"
+          SIGNATURE_DELTA = "signature_delta"
         end
 
         # @yield [delta]
@@ -96,7 +99,12 @@ module OmniAI
         # @param data [Hash]
         def content_block_start(data)
           index = data["index"]
-          @data["content"][index] = data["content_block"]
+          content_block = data["content_block"]
+
+          # Initialize thinking content blocks with empty string for accumulation
+          content_block["thinking"] = "" if content_block["type"] == ContentBlockType::THINKING
+
+          @data["content"][index] = content_block
         end
 
         # Handler for Type::CONTENT_BLOCK_DELTA
@@ -109,8 +117,12 @@ module OmniAI
           case data["delta"]["type"]
           when ContentBlockDeltaType::TEXT_DELTA
             content_block_delta_for_text_delta(data, &)
+          when ContentBlockDeltaType::THINKING_DELTA
+            content_block_delta_for_thinking_delta(data, &)
           when ContentBlockDeltaType::INPUT_JSON_DELTA
             content_block_delta_for_input_json_delta(data, &)
+          when ContentBlockDeltaType::SIGNATURE_DELTA
+            content_block_delta_for_signature_delta(data)
           end
         end
 
@@ -125,9 +137,25 @@ module OmniAI
           text = data["delta"]["text"]
 
           content = @data["content"][index]
-          content["text"] += data["delta"]["text"]
+          content["text"] += text
 
           block&.call(OmniAI::Chat::Delta.new(text:))
+        end
+
+        # Handler for Type::CONTENT_BLOCK_DELTA w/ ContentBlockDeltaType::THINKING_DELTA
+        #
+        # @yield [delta]
+        # @yieldparam delta [OmniAI::Chat::Delta]
+        #
+        # @param data [Hash]
+        def content_block_delta_for_thinking_delta(data, &block)
+          index = data["index"]
+          thinking = data["delta"]["thinking"]
+
+          content = @data["content"][index]
+          content["thinking"] += thinking
+
+          block&.call(OmniAI::Chat::Delta.new(thinking:))
         end
 
         # Handler for Type::CONTENT_BLOCK_DELTA w/ ContentBlockDeltaType::INPUT_JSON_DELTA
@@ -142,6 +170,15 @@ module OmniAI
           content["partial_json"] += data["delta"]["partial_json"]
         end
 
+        # Handler for Type::CONTENT_BLOCK_DELTA w/ ContentBlockDeltaType::SIGNATURE_DELTA
+        #
+        # @param data [Hash]
+        def content_block_delta_for_signature_delta(data)
+          content = @data["content"][data["index"]]
+          content["signature"] ||= ""
+          content["signature"] += data["delta"]["signature"]
+        end
+
         # Handler for Type::CONTENT_BLOCK_STOP
         #
         # @param data [Hash]
@@ -149,6 +186,11 @@ module OmniAI
           index = data["index"]
           content = @data["content"][index]
 
+          # Capture signature for thinking blocks (required for tool call round-trips)
+          signature = data.dig("content_block", "signature")
+          content["signature"] = signature if content["type"] == ContentBlockType::THINKING && signature
+
+          # Handle partial JSON for tool use blocks
           return unless content["partial_json"]
           return if content["partial_json"].empty?
 
