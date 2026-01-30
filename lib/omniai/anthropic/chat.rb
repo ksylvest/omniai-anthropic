@@ -76,18 +76,49 @@ module OmniAI
 
         context.deserializers[:content] = ContentSerializer.method(:deserialize)
         context.deserializers[:response] = ResponseSerializer.method(:deserialize)
+
+        context.serializers[:thinking] = ThinkingSerializer.method(:serialize)
+        context.deserializers[:thinking] = ThinkingSerializer.method(:deserialize)
       end
 
       # @return [Hash]
       def payload
-        OmniAI::Anthropic.config.chat_options.merge({
+        data = OmniAI::Anthropic.config.chat_options.merge({
           model: @model,
           messages:,
           system:,
           stream: stream? || nil,
-          temperature: @temperature,
+          temperature: thinking_config ? nil : @temperature, # Anthropic requires temperature=1 (default) when thinking
           tools: tools_payload,
+          thinking: thinking_config,
         }).compact
+
+        # When thinking is enabled, ensure max_tokens > budget_tokens
+        data[:max_tokens] = thinking_max_tokens if thinking_config
+
+        data
+      end
+
+      # Translates unified thinking option to Anthropic's native format.
+      # Example: `thinking: { budget_tokens: 10000 }` becomes `{ type: "enabled", budget_tokens: 10000 }`
+      # @return [Hash, nil]
+      def thinking_config
+        thinking = @options[:thinking]
+        return unless thinking
+
+        case thinking
+        when true then { type: "enabled", budget_tokens: 10_000 }
+        when Hash then { type: "enabled" }.merge(thinking)
+        end
+      end
+
+      # Returns max_tokens ensuring it's greater than budget_tokens when thinking is enabled.
+      # @return [Integer]
+      def thinking_max_tokens
+        budget = thinking_config[:budget_tokens]
+        base = @options[:max_tokens] || OmniAI::Anthropic.config.chat_options[:max_tokens] || 0
+        # Ensure max_tokens > budget_tokens (default to budget + 8000 for response)
+        [base, budget + 8_000].max
       end
 
       # @return [Array<Hash>]

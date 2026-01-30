@@ -11,7 +11,7 @@ module OmniAI
         # @return [Hash]
         def self.serialize(response, context:)
           usage = response.usage.serialize(context:)
-          choice = response.choice.serialize(context:)
+          choice = response.choices.first.serialize(context:)
 
           choice.merge({ usage: })
         end
