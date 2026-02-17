@@ -294,14 +294,14 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
       before do
         stub_request(:post, "https://api.anthropic.com/v1/messages")
-          .with(body: {
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
             ],
             model:,
             thinking: { type: "enabled", budget_tokens: 10_000 },
             max_tokens: 18_000,
-          })
+          }))
           .to_return_json(body: {
             type: "message",
             role: "assistant",
@@ -321,14 +321,14 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
       before do
         stub_request(:post, "https://api.anthropic.com/v1/messages")
-          .with(body: {
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
             ],
             model:,
             thinking: { type: "enabled", budget_tokens: 5_000 },
             max_tokens: 13_000,
-          })
+          }))
           .to_return_json(body: {
             type: "message",
             role: "assistant",
@@ -350,14 +350,94 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
       before do
         stub_request(:post, "https://api.anthropic.com/v1/messages")
-          .with(body: {
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
             messages: [
               { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
             ],
             model:,
             thinking: { type: "enabled", budget_tokens: 5_000 },
             max_tokens: 50_000,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
           })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
+
+    context 'with thinking: { effort: "medium" } option' do
+      subject(:completion) { described_class.process!(prompt, client:, model:, thinking: { effort: "medium" }) }
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "adaptive" },
+            output_config: { effort: "medium" },
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
+
+    context 'with thinking: { effort: "low" } option' do
+      subject(:completion) { described_class.process!(prompt, client:, model:, thinking: { effort: "low" }) }
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "adaptive" },
+            output_config: { effort: "low" },
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Why did the chicken cross the road?" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Why did the chicken cross the road?") }
+    end
+
+    context "with thinking: { effort: nil } option (adaptive, Claude decides)" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, thinking: { effort: nil }) }
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "adaptive" },
+          }))
           .to_return_json(body: {
             type: "message",
             role: "assistant",

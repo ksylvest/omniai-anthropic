@@ -61,7 +61,7 @@ completion.text # 'The capital of Canada is Ottawa.'
 
 #### Model
 
-`model` takes an optional string (default is `claude-3-haiku-20240307`):
+`model` takes an optional string (default is `claude-sonnet-4-6`):
 
 ```ruby
 completion = client.chat('Provide code for fibonacci', model: OmniAI::Anthropic::Chat::Model::CLAUDE_SONNET)

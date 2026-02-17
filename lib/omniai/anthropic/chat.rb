@@ -21,7 +21,7 @@ module OmniAI
         CLAUDE_3_5_HAIKU_20241022 = "claude-3-5-haiku-20241022"
         CLAUDE_HAIKU_4_5_20251001 = "claude-haiku-4-5-20251001"
         CLAUDE_3_OPUS_20240229 = "claude-3-opus-20240229"
-        CLAUDE_3_SONNET_20240209 = "claude-3-sonnet-20240229"
+        CLAUDE_3_SONNET_20240229 = "claude-3-sonnet-20240229"
         CLAUDE_3_SONNET_20240307 = "claude-3-sonnet-20240307"
         CLAUDE_3_5_SONNET_20240620 = "claude-3-5-sonnet-20240620"
         CLAUDE_3_5_SONNET_20241022 = "claude-3-5-sonnet-20241022"
@@ -35,19 +35,23 @@ module OmniAI
         CLAUDE_OPUS_4_20250514 = "claude-opus-4-20250514"
         CLAUDE_OPUS_4_1_20250805 = "claude-opus-4-1-20250805"
         CLAUDE_OPUS_4_5_20251101 = "claude-opus-4-5-20251101"
+        CLAUDE_OPUS_4_6_20260217 = "claude-opus-4-6-20260217"
         CLAUDE_SONNET_4_20250514 = "claude-sonnet-4-20250514"
-        CLAUDE_SONNET_4_5_20240620 = "claude-sonnet-4-5-20250929"
+        CLAUDE_SONNET_4_5_20250929 = "claude-sonnet-4-5-20250929"
+        CLAUDE_SONNET_4_6_20260217 = "claude-sonnet-4-6-20260217"
 
         CLAUDE_HAIKU_4_5 = "claude-haiku-4-5"
         CLAUDE_OPUS_4_0 = "claude-opus-4-0"
         CLAUDE_OPUS_4_1 = "claude-opus-4-1"
         CLAUDE_OPUS_4_5 = "claude-opus-4-5"
+        CLAUDE_OPUS_4_6 = "claude-opus-4-6"
         CLAUDE_SONNET_4_0 = "claude-sonnet-4-0"
         CLAUDE_SONNET_4_5 = "claude-sonnet-4-5"
+        CLAUDE_SONNET_4_6 = "claude-sonnet-4-6"
 
         CLAUDE_HAIKU = CLAUDE_HAIKU_4_5
-        CLAUDE_OPUS = CLAUDE_OPUS_4_5
-        CLAUDE_SONNET = CLAUDE_SONNET_4_5
+        CLAUDE_OPUS = CLAUDE_OPUS_4_6
+        CLAUDE_SONNET = CLAUDE_SONNET_4_6
       end
 
       DEFAULT_MODEL = Model::CLAUDE_SONNET
@@ -82,40 +86,51 @@ module OmniAI
       end
 
       # @return [Hash]
+      #
+      # NOTE: Anthropic requires temperature=1 (default) when thinking is enabled,
+      # so temperature is omitted from the payload when thinking_config is present.
       def payload
-        data = OmniAI::Anthropic.config.chat_options.merge({
-          model: @model,
-          messages:,
-          system:,
-          stream: stream? || nil,
-          temperature: thinking_config ? nil : @temperature, # Anthropic requires temperature=1 (default) when thinking
-          tools: tools_payload,
-          thinking: thinking_config,
-        }).compact
-
-        # When thinking is enabled, ensure max_tokens > budget_tokens
-        data[:max_tokens] = thinking_max_tokens if thinking_config
-
-        data
+        OmniAI::Anthropic.config.chat_options
+          .merge({
+            model: @model,
+            messages:,
+            system:,
+            stream: stream? || nil,
+            temperature: thinking_config ? nil : @temperature,
+            tools: tools_payload,
+            thinking: thinking_config,
+          })
+          .merge({ max_tokens: thinking_max_tokens, output_config: }.compact)
+          .compact
       end
 
       # Translates unified thinking option to Anthropic's native format.
       # Example: `thinking: { budget_tokens: 10000 }` becomes `{ type: "enabled", budget_tokens: 10000 }`
+      # Example: `thinking: { effort: nil }` becomes `{ type: "adaptive" }` (Claude decides)
+      # Example: `thinking: { effort: "medium" }` becomes `{ type: "adaptive" }` + output_config
       # @return [Hash, nil]
       def thinking_config
-        thinking = @options[:thinking]
-        return unless thinking
+        return @thinking_config if defined?(@thinking_config)
 
-        case thinking
-        when true then { type: "enabled", budget_tokens: 10_000 }
-        when Hash then { type: "enabled" }.merge(thinking)
-        end
+        thinking = @options[:thinking]
+
+        @thinking_config = case thinking
+                           when true then { type: "enabled", budget_tokens: 10_000 }
+                           when Hash
+                             if thinking.key?(:effort)
+                               { type: "adaptive" }
+                             else
+                               { type: "enabled" }.merge(thinking)
+                             end
+                           end
       end
 
       # Returns max_tokens ensuring it's greater than budget_tokens when thinking is enabled.
-      # @return [Integer]
+      # @return [Integer, nil]
       def thinking_max_tokens
-        budget = thinking_config[:budget_tokens]
+        budget = thinking_config&.dig(:budget_tokens)
+        return unless budget
+
         base = @options[:max_tokens] || OmniAI::Anthropic.config.chat_options[:max_tokens] || 0
         # Ensure max_tokens > budget_tokens (default to budget + 8000 for response)
         [base, budget + 8_000].max
@@ -176,6 +191,19 @@ module OmniAI
       # @return [Array<Hash>, nil]
       def tools_payload
         @tools.map { |tool| tool.serialize(context:) } if @tools&.any?
+      end
+
+      # @return [Boolean]
+      def adaptive_thinking?
+        thinking_config&.dig(:type) == "adaptive"
+      end
+
+      # @return [Hash, nil]
+      def output_config
+        return unless adaptive_thinking?
+
+        effort = @options.dig(:thinking, :effort)
+        { effort: } if effort
       end
     end
   end
