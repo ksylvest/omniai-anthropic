@@ -91,7 +91,7 @@ module OmniAI
       # @param text [String] optional
       #
       # @return [Array<Hash>]
-      def perform(action:, text: nil, coordinate: nil) # rubocop:disable Metrics/CyclomaticComplexity
+      def perform(action:, text: nil, coordinate: nil)
         case action
         when Action::KEY then key(text:)
         when Action::TYPE then type(text:)

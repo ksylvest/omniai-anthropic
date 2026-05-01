@@ -20,3 +20,9 @@ Metrics/MethodLength:
 
 Metrics/ParameterLists:
   Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false

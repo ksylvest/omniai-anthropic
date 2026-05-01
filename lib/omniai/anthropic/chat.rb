@@ -100,8 +100,14 @@ module OmniAI
             tools: tools_payload,
             thinking: thinking_config,
           })
-          .merge({ max_tokens: thinking_max_tokens, output_config: }.compact)
+          .merge({ max_tokens:, output_config: }.compact)
           .compact
+      end
+
+      # Resolved max_tokens. Precedence: thinking floor (when budget set) > per-call kwarg.
+      # Returns nil when neither is set, so the config default flows through unchanged.
+      def max_tokens
+        thinking_max_tokens || @options[:max_tokens]
       end
 
       # Translates unified thinking option to Anthropic's native format.
@@ -125,15 +131,28 @@ module OmniAI
                            end
       end
 
-      # Returns max_tokens ensuring it's greater than budget_tokens when thinking is enabled.
+      # Adaptive thinking can consume any portion of max_tokens before emitting output.
+      # Without a floor, callers using adaptive with the legacy default (4096) silently
+      # get empty responses. This constant guarantees enough headroom for thinking + output.
+      ADAPTIVE_THINKING_MIN_TOKENS = 32_768
+
+      # Returns max_tokens ensuring enough headroom when thinking is in play.
+      # Enabled-mode path preserves the existing [base, budget+8000].max floor.
+      # Adaptive-mode path applies ADAPTIVE_THINKING_MIN_TOKENS as a safety floor.
       # @return [Integer, nil]
       def thinking_max_tokens
-        budget = thinking_config&.dig(:budget_tokens)
-        return unless budget
+        return unless thinking_config
 
-        base = @options[:max_tokens] || OmniAI::Anthropic.config.chat_options[:max_tokens] || 0
-        # Ensure max_tokens > budget_tokens (default to budget + 8000 for response)
-        [base, budget + 8_000].max
+        case thinking_config[:type]
+        when "adaptive"
+          [@options[:max_tokens] || ADAPTIVE_THINKING_MIN_TOKENS, ADAPTIVE_THINKING_MIN_TOKENS].max
+        when "enabled"
+          budget = thinking_config[:budget_tokens]
+          return unless budget
+
+          base = @options[:max_tokens] || OmniAI::Anthropic.config.chat_options[:max_tokens] || 0
+          [base, budget + 8_000].max
+        end
       end
 
       # @return [Array<Hash>]
