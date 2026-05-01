@@ -45,12 +45,13 @@ module OmniAI
         CLAUDE_OPUS_4_1 = "claude-opus-4-1"
         CLAUDE_OPUS_4_5 = "claude-opus-4-5"
         CLAUDE_OPUS_4_6 = "claude-opus-4-6"
+        CLAUDE_OPUS_4_7 = "claude-opus-4-7"
         CLAUDE_SONNET_4_0 = "claude-sonnet-4-0"
         CLAUDE_SONNET_4_5 = "claude-sonnet-4-5"
         CLAUDE_SONNET_4_6 = "claude-sonnet-4-6"
 
         CLAUDE_HAIKU = CLAUDE_HAIKU_4_5
-        CLAUDE_OPUS = CLAUDE_OPUS_4_6
+        CLAUDE_OPUS = CLAUDE_OPUS_4_7
         CLAUDE_SONNET = CLAUDE_SONNET_4_6
       end
 
