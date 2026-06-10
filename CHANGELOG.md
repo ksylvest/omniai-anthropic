@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.0
+
+### Added
+
+- `OmniAI::Chat::Response#finish_reason` (and the per-choice `finish_reason`) are now populated from the Anthropic `stop_reason` as a normalized `OmniAI::Chat::FinishReason`: `end_turn`/`stop_sequence` → `:stop`, `max_tokens` → `:length`, `tool_use` → `:tool_call`, `refusal` → `:filter` (`pause_turn` and any unrecognized value → `:other`). The verbatim `stop_reason` is preserved as `finish_reason.value`. Works for both non-streaming and streaming responses. Requires omniai >= 3.7.
+
 ## 3.2.1
 
 ### Fixed
