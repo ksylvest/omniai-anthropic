@@ -31,6 +31,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
             type: "message",
             role: "assistant",
             model:,
+            stop_reason: "end_turn",
             content: [
               {
                 type: "text",
@@ -45,6 +46,7 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
 
       it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+      it { expect(completion.finish_reason.reason).to eq(:stop) }
     end
 
     context "with an array prompt" do
@@ -233,12 +235,16 @@ RSpec.describe OmniAI::Anthropic::Chat do
             event: content_block_stop
             data: #{JSON.generate(type: 'content_block_stop', index: 0)}
 
+            event: message_delta
+            data: #{JSON.generate(type: 'message_delta', delta: { stop_reason: 'end_turn', stop_sequence: nil }, usage: { output_tokens: 15 })}
+
             event: message_stop
             data: #{JSON.generate(type: 'message_stop')}
           STREAM
       end
 
       it { expect(completion.text).to eql("Hello World") }
+      it { expect(completion.finish_reason.reason).to eq(:stop) }
     end
 
     context "when using files / URLs" do
