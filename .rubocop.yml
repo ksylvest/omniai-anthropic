@@ -5,6 +5,11 @@ plugins:
   - rubocop-rake
   - rubocop-rspec
 
+# Example scripts intentionally define multiple tool classes in a single runnable file.
+Style/OneClassPerFile:
+  Exclude:
+    - "examples/**/*"
+
 RSpec/SpecFilePathFormat:
   CustomTransform:
     OmniAI: omniai

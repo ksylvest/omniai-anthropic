@@ -33,8 +33,7 @@ module OmniAI
             ContentSerializer.deserialize(content, context:)
           end
 
-          tool_call_parts = parts.select { |part| part.is_a?(OmniAI::Chat::ToolCall) }
-          non_tool_call_parts = parts.reject { |part| part.is_a?(OmniAI::Chat::ToolCall) }
+          tool_call_parts, non_tool_call_parts = parts.partition { |part| part.is_a?(OmniAI::Chat::ToolCall) }
 
           tool_call_list = OmniAI::Chat::ToolCallList.new(entries: tool_call_parts) if tool_call_parts.any?
           content = non_tool_call_parts if non_tool_call_parts.any?
