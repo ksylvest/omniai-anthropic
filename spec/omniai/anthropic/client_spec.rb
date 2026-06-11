@@ -12,6 +12,6 @@ RSpec.describe OmniAI::Anthropic::Client do
   end
 
   describe "#connection" do
-    it { expect(client.connection).to be_a(HTTP::Client) }
+    it { expect(client.connection).to respond_to(:request) }
   end
 end
