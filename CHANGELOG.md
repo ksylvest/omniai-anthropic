@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.1
+
+### Fixed
+
+- `thinking: { effort:, display: }` now forwards `display` onto the adaptive thinking object (`{ type: "adaptive", display: ... }`). Previously the adaptive branch returned a bare `{ type: "adaptive" }` and silently dropped `:display`, so callers could not opt into summarized thinking on models that default `display` to `"omitted"` (Sonnet 5, Opus 4.7+). `display` remains strictly opt-in: when omitted, no `display` key is sent and the model's own default applies.
+
+  Known limitation: `:display` is only honored on the adaptive branch (reached by passing the `:effort` key). Passing `display` without `effort` falls through to enabled mode and is out of scope for this fix.
+
 ## 3.4.0
 
 ### Added

@@ -116,6 +116,10 @@ module OmniAI
       # Example: `thinking: { budget_tokens: 10000 }` becomes `{ type: "enabled", budget_tokens: 10000 }`
       # Example: `thinking: { effort: nil }` becomes `{ type: "adaptive" }` (Claude decides)
       # Example: `thinking: { effort: "medium" }` becomes `{ type: "adaptive" }` + output_config
+      # Example: `thinking: { effort: "medium", display: "summarized" }` forwards display onto the adaptive object.
+      #
+      # NOTE: `display` is strictly opt-in pass-through. When omitted, no `display` key is sent and the
+      # model's own default applies (e.g. "omitted" on Sonnet 5 / Opus 4.7+, "summarized" on Sonnet 4.6).
       # @return [Hash, nil]
       def thinking_config
         return @thinking_config if defined?(@thinking_config)
@@ -126,7 +130,7 @@ module OmniAI
                            when true then { type: "enabled", budget_tokens: 10_000 }
                            when Hash
                              if thinking.key?(:effort)
-                               { type: "adaptive" }
+                               { type: "adaptive" }.merge(thinking.slice(:display))
                              else
                                { type: "enabled" }.merge(thinking)
                              end
