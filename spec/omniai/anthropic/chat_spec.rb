@@ -404,6 +404,36 @@ RSpec.describe OmniAI::Anthropic::Chat do
       it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
     end
 
+    context 'with thinking: { effort: "medium", display: "summarized" } option' do
+      subject(:completion) do
+        described_class.process!(prompt, client:, model:, thinking: { effort: "medium", display: "summarized" })
+      end
+
+      let(:prompt) { "Tell me a joke!" }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!" }] },
+            ],
+            model:,
+            thinking: { type: "adaptive", display: "summarized" },
+            max_tokens: 32_768,
+            output_config: { effort: "medium" },
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
+
     context 'with thinking: { effort: "low" } option' do
       subject(:completion) { described_class.process!(prompt, client:, model:, thinking: { effort: "low" }) }
 
