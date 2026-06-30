@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.4.0
+
+### Added
+
+- `OmniAI::Anthropic::Chat::Model::CLAUDE_SONNET_5` (`"claude-sonnet-5"`).
+
+### Changed
+
+- The generic `CLAUDE_SONNET` alias now points to `CLAUDE_SONNET_5` (was `CLAUDE_SONNET_4_6`). Since `DEFAULT_MODEL` follows `CLAUDE_SONNET`, the provider default is now `claude-sonnet-5`. Pin `CLAUDE_SONNET_4_6` explicitly to keep the previous model.
+
 ## 3.3.0
 
 ### Added
