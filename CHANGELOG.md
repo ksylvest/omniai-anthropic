@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.5.0
+
+### Added
+
+- `OmniAI::Anthropic::Chat::Model::CLAUDE_OPUS_5` (`"claude-opus-5"`).
+- `OmniAI::Anthropic::Chat::Model::CLAUDE_FABLE_5` (`"claude-fable-5"`).
+
+### Changed
+
+- The generic `CLAUDE_OPUS` alias now points to `CLAUDE_OPUS_5` (was `CLAUDE_OPUS_4_7`). `DEFAULT_MODEL` follows `CLAUDE_SONNET`, not `CLAUDE_OPUS`, so the provider default is unchanged (`claude-sonnet-5`); this only affects callers passing `Model::CLAUDE_OPUS` explicitly. Pin `CLAUDE_OPUS_4_7` to keep the previous model.
+
 ## 3.4.1
 
 ### Fixed
