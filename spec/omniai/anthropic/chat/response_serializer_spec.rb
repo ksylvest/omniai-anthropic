@@ -36,8 +36,11 @@ RSpec.describe OmniAI::Anthropic::Chat::ResponseSerializer do
     subject(:deserialize) { described_class.deserialize(data, context:) }
 
     # Anthropic's `usage` object carries no `total_tokens` key. An earlier fixture here asserted one, which meant
-    # this spec proved the deserializer could parse a shape the API never sends. The shape below matches the wire
-    # format (and the sibling fixture in `stream_spec.rb`).
+    # this spec proved the deserializer could parse a shape the API never sends.
+    #
+    # Confirmed by capture: claude-opus-5 and claude-sonnet-5, POST /v1/messages, streaming and non-streaming,
+    # 2026-08-20 — every response reported input_tokens, cache_creation_input_tokens, cache_read_input_tokens,
+    # cache_creation, output_tokens, output_tokens_details, service_tier and inference_geo. No total_tokens.
     let(:data) do
       {
         "role" => "user",
