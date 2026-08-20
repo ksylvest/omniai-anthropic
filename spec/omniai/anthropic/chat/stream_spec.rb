@@ -202,4 +202,50 @@ RSpec.describe OmniAI::Anthropic::Chat::Stream do
       ])
     end
   end
+
+  describe ".stream! with a thinking breakdown" do
+    subject(:stream!) { stream.stream! { |delta| deltas << delta } }
+
+    let(:deltas) { [] }
+
+    # Anthropic sends the reasoning breakdown only on the final `message_delta`. Most callers stream, so dropping it
+    # here would leave every streamed response reporting no reasoning while non-streamed ones report it.
+    let(:chunks) do
+      [
+        {
+          event: "message_start",
+          data: {
+            type: "message_start",
+            message: { id: "fake_id", role: "assistant", content: [], usage: { input_tokens: 2, output_tokens: 0 } },
+          },
+        },
+        {
+          event: "message_delta",
+          data: {
+            type: "message_delta",
+            delta: {},
+            usage: {
+              input_tokens: 2,
+              output_tokens: 9,
+              output_tokens_details: { thinking_tokens: 6 },
+            },
+          },
+        },
+        { event: "message_stop", data: { type: "message_stop" } },
+      ].map { |chunk| "event: #{chunk[:event]}\ndata: #{JSON.generate(chunk[:data])}\n\n" }
+    end
+
+    it "carries the breakdown into the assembled payload" do
+      expect(stream!["usage"]).to eql({
+        "input_tokens" => 2,
+        "output_tokens" => 9,
+        "output_tokens_details" => { "thinking_tokens" => 6 },
+      })
+    end
+
+    it "surfaces it as thinking_tokens once deserialized" do
+      usage = OmniAI::Chat::Usage.deserialize(stream!["usage"], context: OmniAI::Anthropic::Chat::CONTEXT)
+      expect(usage.thinking_tokens).to be(6)
+    end
+  end
 end

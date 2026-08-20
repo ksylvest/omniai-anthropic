@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (3.5.0)
+    omniai-anthropic (3.6.0)
       event_stream_parser
-      omniai (~> 3.7)
+      omniai (~> 3.8)
       openssl
       zeitwerk
 
@@ -32,7 +32,7 @@ GEM
     lint_roller (1.1.0)
     llhttp (0.6.1)
     logger (1.7.0)
-    omniai (3.7.1)
+    omniai (3.8.0)
       base64
       event_stream_parser
       http (>= 5, < 7)

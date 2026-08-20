@@ -81,10 +81,15 @@ module OmniAI
 
           input_tokens = data.dig("usage", "input_tokens")
           output_tokens = data.dig("usage", "output_tokens")
+          # The thinking breakdown arrives only on the final `message_delta`. Carrying it through keeps streamed
+          # responses reporting the same `thinking_tokens` as non-streamed ones; without it the key is dropped and
+          # every streamed response silently reports no reasoning.
+          output_tokens_details = data.dig("usage", "output_tokens_details")
 
           @data["usage"] ||= {}
           @data["usage"]["input_tokens"] = input_tokens if input_tokens
           @data["usage"]["output_tokens"] = output_tokens if output_tokens
+          @data["usage"]["output_tokens_details"] = output_tokens_details if output_tokens_details
         end
 
         # Handler for Type::MESSAGE_STOP
