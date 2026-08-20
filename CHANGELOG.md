@@ -2,6 +2,12 @@
 
 ## 3.6.0
 
+### Added
+
+- `OmniAI::Chat::Usage#thinking_tokens` is now populated from `usage.output_tokens_details.thinking_tokens` via a new `:usage` deserializer registered on the Anthropic context. Reasoning spend was previously unreadable through this gem. Requires omniai >= 3.8.
+
+  Anthropic already counts reasoning inside `output_tokens`, so this reports the breakdown without changing the output total. `thinking_tokens` is a subset, not an addition — adding it to `output_tokens` double counts.
+
 ### Fixed
 
 - Streamed responses now carry `usage.output_tokens_details` through to the assembled payload, surfacing as `OmniAI::Chat::Usage#thinking_tokens`. The stream merged only `input_tokens` and `output_tokens` out of each `message_delta`, and Anthropic sends the reasoning breakdown only on the final one, so it was dropped on every streamed response — leaving streamed responses reporting no reasoning while non-streamed ones reported it. Requires omniai >= 3.8.
