@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.6.0
+
+### Fixed
+
+- Streamed responses now carry `usage.output_tokens_details` through to the assembled payload, surfacing as `OmniAI::Chat::Usage#thinking_tokens`. The stream merged only `input_tokens` and `output_tokens` out of each `message_delta`, and Anthropic sends the reasoning breakdown only on the final one, so it was dropped on every streamed response — leaving streamed responses reporting no reasoning while non-streamed ones reported it. Requires omniai >= 3.8.
+
+  Anthropic already counts reasoning inside `output_tokens`, so this adds the breakdown without changing the output total. Do not add `thinking_tokens` to `output_tokens` yourself — it is a subset, not an addition.
+
 ## 3.5.0
 
 ### Added
