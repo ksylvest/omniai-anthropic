@@ -87,6 +87,8 @@ module OmniAI
 
         context.serializers[:thinking] = ThinkingSerializer.method(:serialize)
         context.deserializers[:thinking] = ThinkingSerializer.method(:deserialize)
+
+        context.deserializers[:usage] = UsageSerializer.method(:deserialize)
       end
 
       # @return [Hash]
