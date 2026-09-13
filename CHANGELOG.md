@@ -10,6 +10,8 @@
 
 - `OmniAI::Chat::Usage#input_tokens` now includes `cache_creation_input_tokens` and `cache_read_input_tokens`, so it reports the whole prompt as for other providers. Anthropic's own `input_tokens` excludes cached tokens. Without caching both are zero and the value is unchanged. The cache breakdown remains on `response.data["usage"]`.
 
+  **If you price from `input_tokens`, you will bill cached tokens at the full input rate and measure zero improvement from caching.** Price cache reads and writes from `cache_read_input_tokens` and `cache_creation_input_tokens` (per TTL: `cache_creation.ephemeral_5m_input_tokens` / `ephemeral_1h_input_tokens`) and subtract them from `input_tokens`.
+
 ## 3.6.0
 
 ### Added

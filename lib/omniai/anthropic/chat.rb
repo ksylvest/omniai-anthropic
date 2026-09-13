@@ -248,6 +248,8 @@ module OmniAI
         cache_control && system.nil? ? with_cache_control(tools) : tools
       end
 
+      # Relies on `MessageSerializer` normalizing every content part into a block Hash; a bare String would raise.
+      #
       # @param blocks [Array<Hash>]
       # @return [Array<Hash>]
       def with_cache_control(blocks)
