@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.7.0
+
+### Added
+
+- Opt-in prompt caching via `cache: true` (5-minute TTL) or `cache: { ttl: "1h" }`. Marks the system prompt (or the last tool, when there is no system prompt) and the last block of the last message with `cache_control`. Off by default; with it off the payload is unchanged.
+
+### Changed
+
+- `OmniAI::Chat::Usage#input_tokens` now includes `cache_creation_input_tokens` and `cache_read_input_tokens`, so it reports the whole prompt as for other providers. Anthropic's own `input_tokens` excludes cached tokens. Without caching both are zero and the value is unchanged. The cache breakdown remains on `response.data["usage"]`.
+
 ## 3.6.0
 
 ### Added

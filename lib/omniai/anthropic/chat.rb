@@ -165,19 +165,40 @@ module OmniAI
         end
       end
 
+      # When caching, the last block of the last message is marked so each tool-loop round reads the history the
+      # previous round wrote.
+      #
       # @return [Array<Hash>]
       def messages
-        messages = @prompt.messages.reject(&:system?)
-        messages.map { |message| message.serialize(context:) }
+        messages = @prompt.messages.reject(&:system?).map { |message| message.serialize(context:) }
+        return messages unless cache_control && messages.any?
+
+        *history, last = messages
+        history + [last.merge(content: with_cache_control(last[:content]))]
       end
 
-      # @return [String, nil]
+      # When caching, a single marked text block. Tools render before system, so this breakpoint covers both.
+      #
+      # @return [String, Array<Hash>, nil]
       def system
         parts = @prompt.messages.filter(&:system?).filter(&:text?).map(&:text)
         parts << formatting if formatting?
         return if parts.empty?
 
-        parts.join("\n\n")
+        text = parts.join("\n\n")
+        cache_control ? [{ type: "text", text:, cache_control: }] : text
+      end
+
+      # Translates the opt-in `cache` option to Anthropic's `cache_control`.
+      # Example: `cache: true` becomes `{ type: "ephemeral" }` (5-minute TTL)
+      # Example: `cache: { ttl: "1h" }` becomes `{ type: "ephemeral", ttl: "1h" }`
+      #
+      # @return [Hash, nil]
+      def cache_control
+        case @options[:cache]
+        when true then { type: "ephemeral" }
+        when Hash then { type: "ephemeral" }.merge(@options[:cache])
+        end
       end
 
       # @return [String]
@@ -217,9 +238,23 @@ module OmniAI
         end
       end
 
+      # When caching without a system prompt, the last tool carries the breakpoint instead.
+      #
       # @return [Array<Hash>, nil]
       def tools_payload
-        @tools.map { |tool| tool.serialize(context:) } if @tools&.any?
+        return unless @tools&.any?
+
+        tools = @tools.map { |tool| tool.serialize(context:) }
+        cache_control && system.nil? ? with_cache_control(tools) : tools
+      end
+
+      # @param blocks [Array<Hash>]
+      # @return [Array<Hash>]
+      def with_cache_control(blocks)
+        return blocks if blocks.empty?
+
+        *head, last = blocks
+        head + [last.merge(cache_control:)]
       end
 
       # @return [Boolean]

@@ -248,4 +248,62 @@ RSpec.describe OmniAI::Anthropic::Chat::Stream do
       expect(usage.thinking_tokens).to be(6)
     end
   end
+
+  describe ".stream! with cache usage" do
+    subject(:stream!) { stream.stream! { |delta| deltas << delta } }
+
+    let(:deltas) { [] }
+
+    # Captured: claude-opus-5, POST /v1/messages, streaming, cache_control on system, 2026-09-13. The per-TTL
+    # `cache_creation` breakdown arrives only on `message_start`; `message_delta` repeats the flat counts without it.
+    let(:chunks) do
+      [
+        {
+          event: "message_start",
+          data: {
+            type: "message_start",
+            message: {
+              id: "fake_id",
+              role: "assistant",
+              content: [],
+              usage: {
+                input_tokens: 2,
+                cache_creation_input_tokens: 0,
+                cache_read_input_tokens: 2661,
+                cache_creation: { ephemeral_5m_input_tokens: 0, ephemeral_1h_input_tokens: 0 },
+                output_tokens: 1,
+              },
+            },
+          },
+        },
+        {
+          event: "message_delta",
+          data: {
+            type: "message_delta",
+            delta: {},
+            usage: {
+              input_tokens: 2,
+              cache_creation_input_tokens: 0,
+              cache_read_input_tokens: 2661,
+              output_tokens: 3,
+              output_tokens_details: { thinking_tokens: 0 },
+            },
+          },
+        },
+        { event: "message_stop", data: { type: "message_stop" } },
+      ].map { |chunk| "event: #{chunk[:event]}\ndata: #{JSON.generate(chunk[:data])}\n\n" }
+    end
+
+    it "keeps the per-TTL breakdown from message_start" do
+      expect(stream!.dig("usage", "cache_creation")).to eql({
+        "ephemeral_5m_input_tokens" => 0,
+        "ephemeral_1h_input_tokens" => 0,
+      })
+    end
+
+    it "reports the whole prompt once deserialized" do
+      usage = OmniAI::Chat::Usage.deserialize(stream!["usage"], context: OmniAI::Anthropic::Chat::CONTEXT)
+      expect(usage.input_tokens).to be(2663)
+    end
+  end
 end

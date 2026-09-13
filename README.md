@@ -170,3 +170,21 @@ client.chat("What are the prime factors of 1234567?", model: "claude-sonnet-4-20
 The thinking content will stream first, followed by the response.
 
 [Anthropic API Reference `thinking`](https://docs.anthropic.com/en/docs/build-with-claude/thinking)
+
+### Prompt Caching
+
+Prompt caching is opt-in. When enabled, the system prompt (or the last tool, when there is no system prompt) and the last block of the last message are marked with `cache_control`, so each round of a tool-call loop reads the history the previous round wrote.
+
+```ruby
+client.chat(prompt, tools:, cache: true) # 5-minute TTL
+client.chat(prompt, tools:, cache: { ttl: "1h" }) # 1-hour TTL
+```
+
+`usage.input_tokens` reports the whole prompt, including cached tokens. The cache breakdown is on each response's raw usage:
+
+```ruby
+response.response_chain.sum { |r| r.data.dig("usage", "cache_read_input_tokens").to_i }
+response.response_chain.sum { |r| r.data.dig("usage", "cache_creation_input_tokens").to_i }
+```
+
+[Anthropic API Reference `prompt caching`](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)
