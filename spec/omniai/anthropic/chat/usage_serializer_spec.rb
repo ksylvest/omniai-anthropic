@@ -87,6 +87,46 @@ RSpec.describe OmniAI::Anthropic::Chat::UsageSerializer do
       it "preserves thinking_tokens" do
         expect(deserialize.thinking_tokens).to be(444)
       end
+
+      it "leaves input_tokens as serialized, since it is already the whole prompt" do
+        expect(deserialize.input_tokens).to be(46)
+      end
+    end
+
+    context "with a cache write" do
+      # Captured: claude-opus-5, POST /v1/messages, non-streaming, cache_control on system, 2026-09-13.
+      let(:data) do
+        {
+          "input_tokens" => 2,
+          "cache_creation_input_tokens" => 2661,
+          "cache_read_input_tokens" => 0,
+          "cache_creation" => { "ephemeral_5m_input_tokens" => 2661, "ephemeral_1h_input_tokens" => 0 },
+          "output_tokens" => 3,
+          "output_tokens_details" => { "thinking_tokens" => 0 },
+        }
+      end
+
+      it "reports the whole prompt, because Anthropic's input_tokens excludes cached tokens" do
+        expect(deserialize.input_tokens).to be(2663)
+      end
+    end
+
+    context "with a cache read" do
+      # Captured: claude-opus-5, POST /v1/messages, non-streaming, the repeat of the request above, 2026-09-13.
+      let(:data) do
+        {
+          "input_tokens" => 2,
+          "cache_creation_input_tokens" => 0,
+          "cache_read_input_tokens" => 2661,
+          "cache_creation" => { "ephemeral_5m_input_tokens" => 0, "ephemeral_1h_input_tokens" => 0 },
+          "output_tokens" => 3,
+          "output_tokens_details" => { "thinking_tokens" => 0 },
+        }
+      end
+
+      it "reports the whole prompt, because Anthropic's input_tokens excludes cached tokens" do
+        expect(deserialize.input_tokens).to be(2663)
+      end
     end
   end
 end

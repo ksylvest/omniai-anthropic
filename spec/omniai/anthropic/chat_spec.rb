@@ -596,5 +596,176 @@ RSpec.describe OmniAI::Anthropic::Chat do
 
       it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
     end
+
+    context "with cache: true and a system prompt" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, cache: true) }
+
+      let(:prompt) do
+        OmniAI::Chat::Prompt.new.tap do |prompt|
+          prompt.system("You are a comedian.")
+          prompt.user("Tell me a joke!")
+        end
+      end
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              {
+                role: "user",
+                content: [{ type: "text", text: "Tell me a joke!", cache_control: { type: "ephemeral" } }],
+              },
+            ],
+            system: [{ type: "text", text: "You are a comedian.", cache_control: { type: "ephemeral" } }],
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it { expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!") }
+    end
+
+    context 'with cache: { ttl: "1h" }, tools and no system prompt' do
+      subject(:completion) { described_class.process!(prompt, client:, model:, tools: [tool], cache: { ttl: "1h" }) }
+
+      let(:prompt) { "Tell me a joke!" }
+      let(:cache_control) { { type: "ephemeral", ttl: "1h" } }
+
+      let(:tool) do
+        OmniAI::Tool.new(
+          ->(location:) { "Sunny in #{location}" },
+          name: "weather",
+          description: "Finds the current weather",
+          parameters: OmniAI::Schema.object(properties: { location: OmniAI::Schema.string }, required: ["location"])
+        )
+      end
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "Tell me a joke!", cache_control: }] },
+            ],
+            tools: [
+              {
+                name: "weather",
+                description: "Finds the current weather",
+                input_schema: {
+                  type: "object",
+                  properties: { location: { type: "string" } },
+                  required: ["location"],
+                  additionalProperties: false,
+                },
+                cache_control:,
+              },
+            ],
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it "marks the last tool, since no system prompt follows it" do
+        expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!")
+      end
+    end
+
+    context "with cache: true across a tool-call round" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, tools: [tool], cache: true) }
+
+      let(:cache_control) { { type: "ephemeral" } }
+      let(:system) { [{ type: "text", text: "You are a forecaster.", cache_control: }] }
+
+      let(:prompt) do
+        OmniAI::Chat::Prompt.new.tap do |prompt|
+          prompt.system("You are a forecaster.")
+          prompt.user("What is the weather in London?")
+        end
+      end
+
+      let(:tool) do
+        OmniAI::Tool.new(
+          ->(location:) { "Sunny in #{location}" },
+          name: "weather",
+          description: "Finds the current weather",
+          parameters: OmniAI::Schema.object(properties: { location: OmniAI::Schema.string }, required: ["location"])
+        )
+      end
+
+      let(:tools) do
+        [
+          {
+            name: "weather",
+            description: "Finds the current weather",
+            input_schema: {
+              type: "object",
+              properties: { location: { type: "string" } },
+              required: ["location"],
+              additionalProperties: false,
+            },
+          },
+        ]
+      end
+
+      let(:tool_use) { { type: "tool_use", id: "toolu_1", name: "weather", input: { location: "London" } } }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "What is the weather in London?", cache_control: }] },
+            ],
+            system:,
+            tools:,
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            stop_reason: "tool_use",
+            content: [tool_use],
+            usage: { input_tokens: 32, output_tokens: 16 },
+          })
+
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "What is the weather in London?" }] },
+              { role: "assistant", content: [tool_use] },
+              {
+                role: "user",
+                content: [{ type: "tool_result", tool_use_id: "toolu_1", content: "Sunny in London", cache_control: }],
+              },
+            ],
+            system:,
+            tools:,
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            stop_reason: "end_turn",
+            content: [{ type: "text", text: "It is sunny in London." }],
+            usage: { input_tokens: 64, output_tokens: 8 },
+          })
+      end
+
+      it "moves the message breakpoint to the newest tool result" do
+        expect(completion.text).to eql("It is sunny in London.")
+      end
+    end
   end
 end
