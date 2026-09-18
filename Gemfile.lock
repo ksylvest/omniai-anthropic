@@ -19,10 +19,10 @@ GEM
       bigdecimal
       rexml
     diff-lcs (1.6.2)
-    domain_name (0.6.20240107)
+    domain_name (0.6.20260907)
     event_stream_parser (1.0.0)
     hashdiff (1.2.1)
-    http (6.0.3)
+    http (6.0.4)
       http-cookie (~> 1.0)
       llhttp (~> 0.6.1)
     http-cookie (1.1.6)
@@ -30,9 +30,9 @@ GEM
     json (3.0.2)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
-    llhttp (0.6.1)
+    llhttp (0.6.2)
     logger (1.7.0)
-    omniai (3.8.0)
+    omniai (3.9.0)
       base64
       event_stream_parser
       http (>= 5, < 7)
