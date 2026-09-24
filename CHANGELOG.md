@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.8.0
+
+### Added
+
+- `OmniAI::Anthropic::Chat::Model::CLAUDE_OPUS_5_5` (`"claude-opus-5-5"`).
+
+### Changed
+
+- The generic `CLAUDE_OPUS` alias now points to `CLAUDE_OPUS_5_5` (was `CLAUDE_OPUS_5`). `DEFAULT_MODEL` is unchanged (`claude-sonnet-5`). Pin `CLAUDE_OPUS_5` to keep the previous model.
+
+  Opus 5.5 defaults to `medium` effort (Opus 5: `high`); pass `thinking: { effort: "high" }` to keep the previous depth. It also rejects `thinking: true` and `thinking: { budget_tokens: }` (as Opus 5 already does) and `temperature`.
+
 ## 3.7.0
 
 ### Added
