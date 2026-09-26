@@ -61,6 +61,20 @@ module OmniAI
 
       DEFAULT_MODEL = Model::CLAUDE_SONNET
 
+      # Models that reject `temperature` with a 400 ("`temperature` is deprecated for this model"), even with
+      # thinking omitted. Every entry below was verified live against the API on 2026-09-26. Opus 4.8 rejects it
+      # too but has no constant yet.
+      #
+      # Models absent from this list pass `temperature` through unchanged. That is deliberate: an unlisted
+      # model that rejects it surfaces a loud API error the caller can act on, whereas over-applying the guard
+      # would silently discard a caller's temperature.
+      TEMPERATURE_UNSUPPORTED_MODELS = [
+        Model::CLAUDE_OPUS_4_7,
+        Model::CLAUDE_OPUS_5,
+        Model::CLAUDE_OPUS_5_5,
+        Model::CLAUDE_SONNET_5,
+      ].freeze
+
       # @return [Context]
       CONTEXT = Context.build do |context|
         context.serializers[:tool] = ToolSerializer.method(:serialize)
@@ -95,7 +109,8 @@ module OmniAI
       # @return [Hash]
       #
       # NOTE: Anthropic requires temperature=1 (default) when thinking is enabled,
-      # so temperature is omitted from the payload when thinking_config is present.
+      # so temperature is omitted from the payload when thinking_config is present
+      # or the model is in TEMPERATURE_UNSUPPORTED_MODELS.
       def payload
         OmniAI::Anthropic.config.chat_options
           .merge({
@@ -103,7 +118,7 @@ module OmniAI
             messages:,
             system:,
             stream: stream? || nil,
-            temperature: thinking_config ? nil : @temperature,
+            temperature: thinking_config || TEMPERATURE_UNSUPPORTED_MODELS.include?(@model) ? nil : @temperature,
             tools: tools_payload,
             thinking: thinking_config,
           })
