@@ -768,4 +768,39 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
     end
   end
+
+  describe "#payload" do
+    subject(:payload) { described_class.new("Hi", client:, model:, temperature: 0.5, **options).payload }
+
+    let(:client) { OmniAI::Anthropic::Client.new }
+    let(:options) { {} }
+    let(:rejecting_model) { OmniAI::Anthropic::Chat::Model::CLAUDE_OPUS_5_5 }
+    let(:accepting_model) { OmniAI::Anthropic::Chat::Model::CLAUDE_HAIKU_4_5 }
+
+    context "with a model that rejects temperature" do
+      let(:model) { rejecting_model }
+
+      it { expect(payload).not_to have_key(:temperature) }
+    end
+
+    context "with a model that rejects temperature and thinking" do
+      let(:model) { rejecting_model }
+      let(:options) { { thinking: { effort: "low" } } }
+
+      it { expect(payload).not_to have_key(:temperature) }
+    end
+
+    context "with a model that accepts temperature" do
+      let(:model) { accepting_model }
+
+      it { expect(payload[:temperature]).to be(0.5) }
+    end
+
+    context "with a model that accepts temperature and thinking" do
+      let(:model) { accepting_model }
+      let(:options) { { thinking: true } }
+
+      it { expect(payload).not_to have_key(:temperature) }
+    end
+  end
 end

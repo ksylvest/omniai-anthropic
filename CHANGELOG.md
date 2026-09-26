@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.8.1
+
+### Fixed
+
+- `temperature` is no longer sent to models that reject it (`TEMPERATURE_UNSUPPORTED_MODELS`: Opus 4.7, Opus 5, Opus 5.5, Sonnet 5). With `thinking:` omitted it was sent and every call returned a 400 ("`temperature` is deprecated for this model"). Other models pass it through unchanged.
+
 ## 3.8.0
 
 ### Added
