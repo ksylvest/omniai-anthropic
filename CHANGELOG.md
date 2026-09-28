@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.9.0
+
+### Added
+
+- `OmniAI::Anthropic::Chat::Model::CLAUDE_SONNET_5_5` (`"claude-sonnet-5-5"`).
+
+  Opt-in only: the generic `CLAUDE_SONNET` alias and `DEFAULT_MODEL` stay on `CLAUDE_SONNET_5`. Sonnet 5.5 rejects `thinking: true` and `thinking: { budget_tokens: }` (as Sonnet 5 already does) and any non-default `temperature`, which is now omitted (`TEMPERATURE_UNSUPPORTED_MODELS`). Effort levels are recalibrated from Sonnet 5; the default remains `high`.
+
 ## 3.8.1
 
 ### Fixed

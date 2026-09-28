@@ -52,6 +52,7 @@ module OmniAI
         CLAUDE_SONNET_4_5 = "claude-sonnet-4-5"
         CLAUDE_SONNET_4_6 = "claude-sonnet-4-6"
         CLAUDE_SONNET_5 = "claude-sonnet-5"
+        CLAUDE_SONNET_5_5 = "claude-sonnet-5-5"
         CLAUDE_FABLE_5 = "claude-fable-5"
 
         CLAUDE_HAIKU = CLAUDE_HAIKU_4_5
@@ -62,8 +63,8 @@ module OmniAI
       DEFAULT_MODEL = Model::CLAUDE_SONNET
 
       # Models that reject `temperature` with a 400 ("`temperature` is deprecated for this model"), even with
-      # thinking omitted. Every entry below was verified live against the API on 2026-09-26. Opus 4.8 rejects it
-      # too but has no constant yet.
+      # thinking omitted. Every entry below was verified live against the API (Sonnet 5.5 on 2026-09-28, the rest on
+      # 2026-09-26). Opus 4.8 rejects it too but has no constant yet.
       #
       # Models absent from this list pass `temperature` through unchanged. That is deliberate: an unlisted
       # model that rejects it surfaces a loud API error the caller can act on, whereas over-applying the guard
@@ -73,6 +74,7 @@ module OmniAI
         Model::CLAUDE_OPUS_5,
         Model::CLAUDE_OPUS_5_5,
         Model::CLAUDE_SONNET_5,
+        Model::CLAUDE_SONNET_5_5,
       ].freeze
 
       # @return [Context]
