@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniai-anthropic (3.9.0)
+    omniai-anthropic (3.10.0)
       event_stream_parser
       omniai (~> 3.8)
       openssl

@@ -26,5 +26,18 @@ RSpec.describe OmniAI::Anthropic::Chat::ToolCallResultSerializer do
     let(:function) { OmniAI::Chat::Function.new(name: "temperature", arguments: { unit: "celsius" }) }
 
     it { expect(serialize).to eql(type: "tool_result", tool_use_id: "fake_id", content: "Hello!") }
+
+    context "with media content" do
+      let(:file) { OmniAI::Chat::File.new(StringIO.new("fake"), "image/png") }
+      let(:tool_call_result) { OmniAI::Chat::ToolCallResult.new(content: file, tool_call_id: "fake_id") }
+
+      it "sends the media as a content block" do
+        expect(serialize).to eql(
+          type: "tool_result",
+          tool_use_id: "fake_id",
+          content: [{ type: :image, source: { type: "base64", media_type: "image/png", data: "ZmFrZQ==" } }]
+        )
+      end
+    end
   end
 end
