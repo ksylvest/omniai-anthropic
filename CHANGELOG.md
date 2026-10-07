@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.11.0
+
+### Added
+
+- `OmniAI::Anthropic::Chat::Model::CLAUDE_HAIKU_5_5` (`"claude-haiku-5-5"`).
+
+  Opt-in only: the generic `CLAUDE_HAIKU` alias stays on `CLAUDE_HAIKU_4_5`. Haiku 5.5 rejects `thinking: true` and `thinking: { budget_tokens: }` (adaptive thinking only, on by default) and any non-default `temperature`, which is now omitted (`TEMPERATURE_UNSUPPORTED_MODELS`). Effort runs `low` through `max` with a `medium` default; output is capped at 128,000 tokens.
+
 ## 3.10.0
 
 ### Added

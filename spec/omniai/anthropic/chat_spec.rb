@@ -790,6 +790,12 @@ RSpec.describe OmniAI::Anthropic::Chat do
       it { expect(payload).not_to have_key(:temperature) }
     end
 
+    context "with Claude Haiku 5.5" do
+      let(:model) { OmniAI::Anthropic::Chat::Model::CLAUDE_HAIKU_5_5 }
+
+      it { expect(payload).not_to have_key(:temperature) }
+    end
+
     context "with a model that accepts temperature" do
       let(:model) { accepting_model }
 

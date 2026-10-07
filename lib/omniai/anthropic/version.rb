@@ -2,6 +2,6 @@
 
 module OmniAI
   module Anthropic
-    VERSION = "3.10.0"
+    VERSION = "3.11.0"
   end
 end
