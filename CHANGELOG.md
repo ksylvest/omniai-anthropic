@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.12.0
+
+### Added
+
+- `cache: :system` marks only the system prompt (or the last tool, when there is no system prompt) and leaves the last message unmarked. For single-shot prompts with a shared system prompt and a unique message, this avoids writing each message to the cache at 1.25x with nothing reading it back. `cache: true` is unchanged.
+
 ## 3.11.0
 
 ### Added

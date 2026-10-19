@@ -180,6 +180,12 @@ client.chat(prompt, tools:, cache: true) # 5-minute TTL
 client.chat(prompt, tools:, cache: { ttl: "1h" }) # 1-hour TTL
 ```
 
+For single-shot prompts that share a system prompt but send a different message each time (e.g. one call per document), `cache: :system` marks only the system prompt (or the last tool), so the unique message is not written to the cache:
+
+```ruby
+client.chat(prompt, cache: :system) # 5-minute TTL
+```
+
 `usage.input_tokens` reports the whole prompt, including cached tokens. The cache breakdown is on each response's raw usage:
 
 ```ruby
