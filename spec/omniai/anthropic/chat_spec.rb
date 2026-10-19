@@ -845,6 +845,87 @@ RSpec.describe OmniAI::Anthropic::Chat do
         expect(completion.text).to eql("It is sunny in London.")
       end
     end
+
+    context "with cache: :system across a tool-call round" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, tools: [tool], cache: :system) }
+
+      let(:system) { [{ type: "text", text: "You are a forecaster.", cache_control: { type: "ephemeral" } }] }
+
+      let(:prompt) do
+        OmniAI::Chat::Prompt.new.tap do |prompt|
+          prompt.system("You are a forecaster.")
+          prompt.user("What is the weather in London?")
+        end
+      end
+
+      let(:tool) do
+        OmniAI::Tool.new(
+          ->(location:) { "Sunny in #{location}" },
+          name: "weather",
+          description: "Finds the current weather",
+          parameters: OmniAI::Schema.object(properties: { location: OmniAI::Schema.string }, required: ["location"])
+        )
+      end
+
+      let(:tools) do
+        [
+          {
+            name: "weather",
+            description: "Finds the current weather",
+            input_schema: {
+              type: "object",
+              properties: { location: { type: "string" } },
+              required: ["location"],
+              additionalProperties: false,
+            },
+          },
+        ]
+      end
+
+      let(:tool_use) { { type: "tool_use", id: "toolu_1", name: "weather", input: { location: "London" } } }
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [{ role: "user", content: [{ type: "text", text: "What is the weather in London?" }] }],
+            system:,
+            tools:,
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            stop_reason: "tool_use",
+            content: [tool_use],
+            usage: { input_tokens: 32, output_tokens: 16 },
+          })
+
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [
+              { role: "user", content: [{ type: "text", text: "What is the weather in London?" }] },
+              { role: "assistant", content: [tool_use] },
+              { role: "user", content: [{ type: "tool_result", tool_use_id: "toolu_1", content: "Sunny in London" }] },
+            ],
+            system:,
+            tools:,
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            stop_reason: "end_turn",
+            content: [{ type: "text", text: "It is sunny in London." }],
+            usage: { input_tokens: 64, output_tokens: 8 },
+          })
+      end
+
+      it "leaves every round's messages unmarked" do
+        expect(completion.text).to eql("It is sunny in London.")
+      end
+    end
   end
 
   describe "#payload" do
