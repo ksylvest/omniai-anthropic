@@ -681,6 +681,84 @@ RSpec.describe OmniAI::Anthropic::Chat do
       end
     end
 
+    context "with cache: :system and a system prompt" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, cache: :system) }
+
+      let(:prompt) do
+        OmniAI::Chat::Prompt.new.tap do |prompt|
+          prompt.system("You are a comedian.")
+          prompt.user("Tell me a joke!")
+        end
+      end
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [{ role: "user", content: [{ type: "text", text: "Tell me a joke!" }] }],
+            system: [{ type: "text", text: "You are a comedian.", cache_control: { type: "ephemeral" } }],
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it "marks the system prompt but not the last message" do
+        expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!")
+      end
+    end
+
+    context "with cache: :system, tools and no system prompt" do
+      subject(:completion) { described_class.process!(prompt, client:, model:, tools: [tool], cache: :system) }
+
+      let(:prompt) { "Tell me a joke!" }
+
+      let(:tool) do
+        OmniAI::Tool.new(
+          ->(location:) { "Sunny in #{location}" },
+          name: "weather",
+          description: "Finds the current weather",
+          parameters: OmniAI::Schema.object(properties: { location: OmniAI::Schema.string }, required: ["location"])
+        )
+      end
+
+      before do
+        stub_request(:post, "https://api.anthropic.com/v1/messages")
+          .with(body: OmniAI::Anthropic.config.chat_options.merge({
+            messages: [{ role: "user", content: [{ type: "text", text: "Tell me a joke!" }] }],
+            tools: [
+              {
+                name: "weather",
+                description: "Finds the current weather",
+                input_schema: {
+                  type: "object",
+                  properties: { location: { type: "string" } },
+                  required: ["location"],
+                  additionalProperties: false,
+                },
+                cache_control: { type: "ephemeral" },
+              },
+            ],
+            model:,
+          }))
+          .to_return_json(body: {
+            type: "message",
+            role: "assistant",
+            model:,
+            content: [{ type: "text", text: "Two elephants fall off a cliff. Boom! Boom!" }],
+            usage: { input_tokens: 32, output_tokens: 64 },
+          })
+      end
+
+      it "marks the last tool but not the last message" do
+        expect(completion.text).to eql("Two elephants fall off a cliff. Boom! Boom!")
+      end
+    end
+
     context "with cache: true across a tool-call round" do
       subject(:completion) { described_class.process!(prompt, client:, model:, tools: [tool], cache: true) }
 

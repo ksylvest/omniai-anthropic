@@ -186,12 +186,12 @@ module OmniAI
       end
 
       # When caching, the last block of the last message is marked so each tool-loop round reads the history the
-      # previous round wrote.
+      # previous round wrote. `cache: :system` skips this for single-shot prompts whose message is never reused.
       #
       # @return [Array<Hash>]
       def messages
         messages = @prompt.messages.reject(&:system?).map { |message| message.serialize(context:) }
-        return messages unless cache_control && messages.any?
+        return messages unless cache_control && @options[:cache] != :system && messages.any?
 
         *history, last = messages
         history + [last.merge(content: with_cache_control(last[:content]))]
@@ -211,12 +211,13 @@ module OmniAI
 
       # Translates the opt-in `cache` option to Anthropic's `cache_control`.
       # Example: `cache: true` becomes `{ type: "ephemeral" }` (5-minute TTL)
+      # Example: `cache: :system` becomes `{ type: "ephemeral" }` on the system prompt (or last tool) only
       # Example: `cache: { ttl: "1h" }` becomes `{ type: "ephemeral", ttl: "1h" }`
       #
       # @return [Hash, nil]
       def cache_control
         case @options[:cache]
-        when true then { type: "ephemeral" }
+        when true, :system then { type: "ephemeral" }
         when Hash then { type: "ephemeral" }.merge(@options[:cache])
         end
       end
