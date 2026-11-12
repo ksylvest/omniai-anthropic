@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.13.0
+
+### Added
+
+- `Chat::Model::CLAUDE_FABLE_5_2` (`"claude-fable-5-2"`), `CLAUDE_FABLE_5_1` (`"claude-fable-5-1"`) and `CLAUDE_OPUS_4_8` (`"claude-opus-4-8"`).
+
+  All three reject any `temperature` with a 400 (verified live 2026-11-12), so it is now omitted for them (`TEMPERATURE_UNSUPPORTED_MODELS`). Opt-in only: `CLAUDE_OPUS`, `CLAUDE_SONNET`, `CLAUDE_HAIKU` and the default model are unchanged. Fable 5.x always thinks: `thinking: true` and `thinking: { budget_tokens: }` 400, so use `thinking: { effort: }` or omit `thinking`. Fable 5.x also requires 30-day data retention on the organization.
+
 ## 3.12.0
 
 ### Added
