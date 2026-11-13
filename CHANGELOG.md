@@ -6,7 +6,11 @@
 
 - `Chat::Model::CLAUDE_FABLE_5_2` (`"claude-fable-5-2"`), `CLAUDE_FABLE_5_1` (`"claude-fable-5-1"`) and `CLAUDE_OPUS_4_8` (`"claude-opus-4-8"`).
 
-  All three reject any `temperature` with a 400 (verified live 2026-11-12), so it is now omitted for them (`TEMPERATURE_UNSUPPORTED_MODELS`). Opt-in only: `CLAUDE_OPUS`, `CLAUDE_SONNET`, `CLAUDE_HAIKU` and the default model are unchanged. Fable 5.x always thinks: `thinking: true` and `thinking: { budget_tokens: }` 400, so use `thinking: { effort: }` or omit `thinking`. Fable 5.x also requires 30-day data retention on the organization.
+  All three reject any `temperature` with a 400 (verified live 2026-11-12), so it is now omitted for them (`TEMPERATURE_UNSUPPORTED_MODELS`). Opt-in only: `CLAUDE_OPUS`, `CLAUDE_SONNET`, `CLAUDE_HAIKU` and the default model are unchanged.
+
+  Fable 5.1/5.2 completions were not verified end to end: Fable requires 30-day data retention on the organization, and requests without it return a 400. Per Anthropic's [Fable 5.2 migration guide](https://platform.claude.com/docs/en/models/fable-5-2/migration-guide), Fable always thinks, `thinking: true`, `thinking: { budget_tokens: }` and `{ type: "disabled" }` return a 400, and `temperature`, `top_p` and `top_k` must be omitted.
+
+  Because Fable thinks even when `thinking` is omitted, the default `max_tokens` (4,096) covers thinking and answer and can return no text. Pass `thinking: { effort: }` (applies the 32,768 floor) or a larger `max_tokens`.
 
 ## 3.12.0
 
