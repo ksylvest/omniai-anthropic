@@ -20,7 +20,7 @@ GEM
       rexml
     diff-lcs (1.6.2)
     domain_name (0.6.20260907)
-    event_stream_parser (1.0.1)
+    event_stream_parser (1.0.2)
     hashdiff (1.2.2)
     http (6.0.4)
       http-cookie (~> 1.0)
